@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Maná",
+    "slug": "mana",
+    "version": "1.0.0",
+    "scheme": "appcristiana",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tunombre.mana"
+    },
+    "android": {
+      "package": "com.tunombre.mana",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#3C3489"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bf9a70a9-6d4b-4660-9704-2a025069bce3"
+      }
+    }
+  }
+}
