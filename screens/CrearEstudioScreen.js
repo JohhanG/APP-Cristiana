@@ -8,9 +8,12 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { buscarVersiculo } from '../lib/bibliaApi';
+import { elegirYSubirImagen } from '../lib/subirImagen';
 import { useTheme } from '../theme/ThemeContext';
 
 export default function CrearEstudioScreen({ navigation }) {
@@ -20,8 +23,10 @@ export default function CrearEstudioScreen({ navigation }) {
   const [titulo, setTitulo] = useState('');
   const [tema, setTema] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [portadaUrl, setPortadaUrl] = useState(null);
+  const [subiendoPortada, setSubiendoPortada] = useState(false);
   const [dias, setDias] = useState([
-    { titulo: '', referencia_biblica: '', texto_biblico: '', reflexion: '', pregunta_reflexion: '', buscando: false },
+    { titulo: '', referencia_biblica: '', texto_biblico: '', reflexion: '', pregunta_reflexion: '', imagen_url: null, buscando: false, subiendoImagen: false },
   ]);
   const [guardando, setGuardando] = useState(false);
 
@@ -32,12 +37,38 @@ export default function CrearEstudioScreen({ navigation }) {
   }
 
   function agregarDia() {
-    setDias([...dias, { titulo: '', referencia_biblica: '', texto_biblico: '', reflexion: '', pregunta_reflexion: '', buscando: false }]);
+    setDias([...dias, { titulo: '', referencia_biblica: '', texto_biblico: '', reflexion: '', pregunta_reflexion: '', imagen_url: null, buscando: false, subiendoImagen: false }]);
   }
 
   function quitarDia(index) {
     if (dias.length === 1) return;
     setDias(dias.filter((_, i) => i !== index));
+  }
+
+  async function subirPortada() {
+    setSubiendoPortada(true);
+    const resultado = await elegirYSubirImagen('portadas');
+    setSubiendoPortada(false);
+
+    if (resultado.cancelado) return;
+    if (!resultado.exito) {
+      Alert.alert('No se pudo subir la imagen', resultado.error);
+      return;
+    }
+    setPortadaUrl(resultado.url);
+  }
+
+  async function subirImagenDia(index) {
+    actualizarDia(index, 'subiendoImagen', true);
+    const resultado = await elegirYSubirImagen('dias');
+    actualizarDia(index, 'subiendoImagen', false);
+
+    if (resultado.cancelado) return;
+    if (!resultado.exito) {
+      Alert.alert('No se pudo subir la imagen', resultado.error);
+      return;
+    }
+    actualizarDia(index, 'imagen_url', resultado.url);
   }
 
   async function buscarTextoBiblico(index) {
@@ -85,6 +116,7 @@ export default function CrearEstudioScreen({ navigation }) {
         titulo,
         descripcion,
         tema,
+        portada_url: portadaUrl,
         num_dias: dias.length,
         estado: publicarDirecto ? 'pendiente' : 'borrador',
       })
@@ -105,6 +137,7 @@ export default function CrearEstudioScreen({ navigation }) {
       texto_biblico: d.texto_biblico || null,
       reflexion: d.reflexion,
       pregunta_reflexion: d.pregunta_reflexion,
+      imagen_url: d.imagen_url || null,
     }));
 
     const { error: errorDias } = await supabase.from('dias_estudio').insert(filasDias);
@@ -122,6 +155,20 @@ export default function CrearEstudioScreen({ navigation }) {
 
   return (
     <ScrollView style={styles.contenedor} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+      <Text style={styles.etiqueta}>Portada del estudio (opcional)</Text>
+      <TouchableOpacity style={styles.cajaImagen} onPress={subirPortada} disabled={subiendoPortada}>
+        {subiendoPortada ? (
+          <ActivityIndicator color={colores.primario} />
+        ) : portadaUrl ? (
+          <Image source={{ uri: portadaUrl }} style={styles.imagenPortada} />
+        ) : (
+          <View style={styles.placeholderImagen}>
+            <Ionicons name="image-outline" size={28} color={colores.textoTenue} />
+            <Text style={styles.textoPlaceholderImagen}>Toca para subir una portada</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
       <Text style={styles.etiqueta}>Título del estudio</Text>
       <TextInput
         style={styles.input}
@@ -214,6 +261,24 @@ export default function CrearEstudioScreen({ navigation }) {
             value={dia.pregunta_reflexion}
             onChangeText={(v) => actualizarDia(index, 'pregunta_reflexion', v)}
           />
+
+          <Text style={styles.etiquetaImagenDia}>Imagen del día (opcional)</Text>
+          <TouchableOpacity
+            style={styles.cajaImagenDia}
+            onPress={() => subirImagenDia(index)}
+            disabled={dia.subiendoImagen}
+          >
+            {dia.subiendoImagen ? (
+              <ActivityIndicator color={colores.primario} />
+            ) : dia.imagen_url ? (
+              <Image source={{ uri: dia.imagen_url }} style={styles.imagenDiaPreview} />
+            ) : (
+              <View style={styles.placeholderImagenDia}>
+                <Ionicons name="image-outline" size={20} color={colores.textoTenue} />
+                <Text style={styles.textoPlaceholderImagenDia}>Agregar imagen</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
       ))}
 
@@ -254,6 +319,18 @@ function crearEstilos(colores) {
       color: colores.texto,
       backgroundColor: colores.superficie,
     },
+    cajaImagen: {
+      height: 140,
+      borderRadius: 10,
+      overflow: 'hidden',
+      backgroundColor: colores.superficie,
+      marginBottom: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    imagenPortada: { width: '100%', height: '100%' },
+    placeholderImagen: { alignItems: 'center' },
+    textoPlaceholderImagen: { fontSize: 12, color: colores.textoTenue, marginTop: 6 },
     seccion: { fontSize: 17, fontWeight: '600', marginTop: 20, marginBottom: 8, color: colores.texto },
     tarjetaDia: {
       backgroundColor: colores.superficie,
@@ -288,6 +365,18 @@ function crearEstilos(colores) {
     },
     textoBiblicoEncontrado: { fontSize: 14, fontStyle: 'italic', color: colores.texto, lineHeight: 20 },
     notaVersion: { fontSize: 11, color: colores.textoTenue, marginTop: 6, textAlign: 'right' },
+    etiquetaImagenDia: { fontSize: 12, color: colores.textoSecundario, marginTop: 4, marginBottom: 6 },
+    cajaImagenDia: {
+      height: 90,
+      borderRadius: 8,
+      overflow: 'hidden',
+      backgroundColor: colores.superficieAlterna,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    imagenDiaPreview: { width: '100%', height: '100%' },
+    placeholderImagenDia: { alignItems: 'center' },
+    textoPlaceholderImagenDia: { fontSize: 11, color: colores.textoTenue, marginTop: 4 },
     botonAgregarDia: {
       borderWidth: 1,
       borderColor: colores.primario,

@@ -7,7 +7,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -19,6 +21,9 @@ export default function EstudioDetalleScreen({ route }) {
   const [dias, setDias] = useState([]);
   const [diaActual, setDiaActual] = useState(0);
   const [cargando, setCargando] = useState(true);
+  const [esFavorito, setEsFavorito] = useState(false);
+  const [cambiandoFavorito, setCambiandoFavorito] = useState(false);
+  const [usuarioId, setUsuarioId] = useState(null);
 
   useEffect(() => {
     async function cargar() {
@@ -34,12 +39,45 @@ export default function EstudioDetalleScreen({ route }) {
         .eq('estudio_id', estudioId)
         .order('numero_dia', { ascending: true });
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUsuarioId(user.id);
+        const { data: favorito } = await supabase
+          .from('estudio_likes')
+          .select('estudio_id')
+          .eq('usuario_id', user.id)
+          .eq('estudio_id', estudioId)
+          .maybeSingle();
+        setEsFavorito(!!favorito);
+      }
+
       setEstudio(estudioData);
       setDias(diasData || []);
       setCargando(false);
     }
     cargar();
   }, [estudioId]);
+
+  async function alternarFavorito() {
+    if (!usuarioId) return;
+    setCambiandoFavorito(true);
+
+    if (esFavorito) {
+      await supabase
+        .from('estudio_likes')
+        .delete()
+        .eq('usuario_id', usuarioId)
+        .eq('estudio_id', estudioId);
+      setEsFavorito(false);
+    } else {
+      await supabase
+        .from('estudio_likes')
+        .insert({ usuario_id: usuarioId, estudio_id: estudioId });
+      setEsFavorito(true);
+    }
+
+    setCambiandoFavorito(false);
+  }
 
   async function marcarProgreso() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -73,9 +111,32 @@ export default function EstudioDetalleScreen({ route }) {
   const dia = dias[diaActual];
 
   return (
-    <ScrollView style={styles.contenedor} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-      <Text style={styles.tituloEstudio}>{estudio?.titulo}</Text>
-      <Text style={styles.autor}>por {estudio?.perfiles?.nombre_usuario || 'anónimo'}</Text>
+    <ScrollView style={styles.contenedor} contentContainerStyle={{ paddingBottom: 40 }}>
+      {estudio?.portada_url && (
+        <Image source={{ uri: estudio.portada_url }} style={styles.imagenPortada} />
+      )}
+
+      <View style={{ padding: 16 }}>
+      <View style={styles.filaTitulo}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.tituloEstudio}>{estudio?.titulo}</Text>
+          <Text style={styles.autor}>por {estudio?.perfiles?.nombre_usuario || 'anónimo'}</Text>
+        </View>
+
+        {usuarioId && (
+          <TouchableOpacity
+            style={styles.botonFavorito}
+            onPress={alternarFavorito}
+            disabled={cambiandoFavorito}
+          >
+            <Ionicons
+              name={esFavorito ? 'heart' : 'heart-outline'}
+              size={26}
+              color={esFavorito ? colores.peligro : colores.textoSecundario}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View style={styles.progresoBar}>
         <View style={[styles.progresoRelleno, { width: `${((diaActual + 1) / dias.length) * 100}%` }]} />
@@ -84,6 +145,9 @@ export default function EstudioDetalleScreen({ route }) {
 
       {dia && (
         <View style={styles.tarjetaDia}>
+          {dia.imagen_url && (
+            <Image source={{ uri: dia.imagen_url }} style={styles.imagenDia} />
+          )}
           <Text style={styles.tituloDia}>{dia.titulo}</Text>
           <Text style={styles.referencia}>{dia.referencia_biblica}</Text>
 
@@ -113,6 +177,7 @@ export default function EstudioDetalleScreen({ route }) {
           </Text>
         </TouchableOpacity>
       </View>
+      </View>
     </ScrollView>
   );
 }
@@ -121,8 +186,12 @@ function crearEstilos(colores) {
   return StyleSheet.create({
     contenedor: { flex: 1, backgroundColor: colores.fondo },
     centrado: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    filaTitulo: { flexDirection: 'row', alignItems: 'flex-start' },
+    imagenPortada: { width: '100%', height: 200 },
+    imagenDia: { width: '100%', height: 160, borderRadius: 10, marginBottom: 12 },
     tituloEstudio: { fontSize: 22, fontWeight: '600', color: colores.texto },
     autor: { fontSize: 13, color: colores.textoSecundario, marginBottom: 16 },
+    botonFavorito: { padding: 4, marginLeft: 8 },
     progresoBar: { height: 6, backgroundColor: colores.superficie, borderRadius: 4, overflow: 'hidden' },
     progresoRelleno: { height: '100%', backgroundColor: colores.primario },
     progresoTexto: { fontSize: 12, color: colores.textoTenue, marginTop: 6, marginBottom: 20 },

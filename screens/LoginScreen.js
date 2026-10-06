@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
- 
+
 export default function LoginScreen() {
   const { colores } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cargando, setCargando] = useState(false);
   const [esRegistro, setEsRegistro] = useState(false);
- 
+
   async function iniciarSesion() {
     if (!email || !password) {
       Alert.alert('Faltan datos', 'Ingresa tu correo y contraseña');
@@ -28,24 +28,29 @@ export default function LoginScreen() {
     setCargando(false);
     if (error) Alert.alert('Error al iniciar sesión', error.message);
   }
- 
+
   async function registrarse() {
     if (!email || !password) {
       Alert.alert('Faltan datos', 'Ingresa tu correo y contraseña');
       return;
     }
     setCargando(true);
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: 'appcristiana://' },
+      options: {
+        emailRedirectTo: 'appcristiana://',
+      },
     });
     setCargando(false);
     if (error) {
       Alert.alert('Error al registrarte', error.message);
       return;
     }
-    Alert.alert('Listo', 'Revisa tu correo para confirmar la cuenta si es necesario.');
+    Alert.alert(
+      'Listo',
+      'Revisa tu correo para confirmar la cuenta. Cuando inicies sesión, te ayudaremos a personalizar tu perfil.'
+    );
   }
 
   async function olvideContrasena() {
@@ -64,16 +69,16 @@ export default function LoginScreen() {
     }
     Alert.alert('Correo enviado', 'Revisa tu correo y toca el enlace para crear una nueva contraseña.');
   }
- 
+
   const styles = crearEstilos(colores);
- 
+
   return (
     <View style={styles.contenedor}>
-      <Text style={styles.titulo}>Mi App Cristiana</Text>
+      <Text style={styles.titulo}>Maná</Text>
       <Text style={styles.subtitulo}>
         {esRegistro ? 'Crea tu cuenta' : 'Inicia sesión para continuar'}
       </Text>
- 
+
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
@@ -83,6 +88,7 @@ export default function LoginScreen() {
         value={email}
         onChangeText={setEmail}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
@@ -91,7 +97,7 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
       />
- 
+
       <TouchableOpacity
         style={styles.boton}
         onPress={esRegistro ? registrarse : iniciarSesion}
@@ -103,7 +109,7 @@ export default function LoginScreen() {
           <Text style={styles.textoBoton}>{esRegistro ? 'Registrarme' : 'Entrar'}</Text>
         )}
       </TouchableOpacity>
- 
+
       {!esRegistro && (
         <TouchableOpacity onPress={olvideContrasena} disabled={cargando}>
           <Text style={styles.enlaceSecundario}>¿Olvidaste tu contraseña?</Text>
@@ -118,7 +124,7 @@ export default function LoginScreen() {
     </View>
   );
 }
- 
+
 function crearEstilos(colores) {
   return StyleSheet.create({
     contenedor: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: colores.fondo },

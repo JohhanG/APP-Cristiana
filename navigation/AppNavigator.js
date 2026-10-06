@@ -1,110 +1,164 @@
-import React from 'react';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../theme/ThemeContext';
+import { supabase } from '../lib/supabase';
 
 import InicioScreen from '../screens/InicioScreen';
 import EstudiosScreen from '../screens/EstudiosScreen';
-import CrearEstudioScreen from '../screens/CrearEstudioScreen';
-import EstudioDetalleScreen from '../screens/EstudioDetalleScreen';
+import BibliaScreen from '../screens/BibliaScreen';
 import PerfilScreen from '../screens/PerfilScreen';
 import AdminScreen from '../screens/AdminScreen';
+import CrearEstudioScreen from '../screens/CrearEstudioScreen';
+import EstudioDetalleScreen from '../screens/EstudioDetalleScreen';
 import UsuariosScreen from '../screens/UsuariosScreen';
-import { useTheme } from '../theme/ThemeContext';
+import FavoritosScreen from '../screens/FavoritosScreen';
+import MisEstudiosScreen from '../screens/MisEstudiosScreen';
+import VersiculosFavoritosScreen from '../screens/VersiculosFavoritosScreen';
+import AyudaScreen from '../screens/AyudaScreen';
+import NotasScreen from '../screens/NotasScreen';
+import NotaDetalleScreen from '../screens/NotaDetalleScreen';
+import LineaDeTiempoScreen from '../screens/LineaDeTiempoScreen';
+import DiarioOracionScreen from '../screens/DiarioOracionScreen';
+import EstadoAnimoScreen from '../screens/EstadoAnimoScreen';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-function PilaInicio() {
-  const { colores } = useTheme();
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: colores.fondo },
-        headerTintColor: colores.texto,
-        headerShadowVisible: false,
-      }}
-    >
-      <Stack.Screen name="PantallaInicio" component={InicioScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="EstudioDetalle" component={EstudioDetalleScreen} options={{ title: '' }} />
-    </Stack.Navigator>
-  );
-}
+const ICONOS_TAB = {
+  Inicio: { activo: 'home', inactivo: 'home-outline' },
+  Estudios: { activo: 'book', inactivo: 'book-outline' },
+  Biblia: { activo: 'reader', inactivo: 'reader-outline' },
+  Panel: { activo: 'shield-checkmark', inactivo: 'shield-checkmark-outline' },
+  Perfil: { activo: 'person', inactivo: 'person-outline' },
+};
 
-function PilaEstudios() {
+function Pestanas() {
   const { colores } = useTheme();
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: colores.fondo },
-        headerTintColor: colores.texto,
-        headerShadowVisible: false,
-      }}
-    >
-      <Stack.Screen name="ListaEstudios" component={EstudiosScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CrearEstudio" component={CrearEstudioScreen} options={{ title: 'Crear estudio' }} />
-      <Stack.Screen name="EstudioDetalle" component={EstudioDetalleScreen} options={{ title: '' }} />
-    </Stack.Navigator>
-  );
-}
+  const [miRol, setMiRol] = useState(null);
+  const [listo, setListo] = useState(false);
 
-function PilaPerfil() {
-  const { colores } = useTheme();
+  useEffect(() => {
+    async function verificarRol() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from('perfiles').select('rol').eq('id', user.id).single();
+        setMiRol(data?.rol || 'lector');
+      }
+      setListo(true);
+    }
+    verificarRol();
+  }, []);
+
+  const tienePanel = miRol === 'admin' || miRol === 'revisor';
+
+  if (!listo) return null;
+
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: colores.fondo },
-        headerTintColor: colores.texto,
-        headerShadowVisible: false,
-      }}
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: colores.primario,
+        tabBarInactiveTintColor: colores.textoTenue,
+        tabBarStyle: {
+          backgroundColor: colores.superficie,
+          borderTopColor: colores.borde,
+        },
+        tabBarIcon: ({ focused, color, size }) => {
+          const iconos = ICONOS_TAB[route.name];
+          const nombreIcono = focused ? iconos.activo : iconos.inactivo;
+          return <Ionicons name={nombreIcono} size={size} color={color} />;
+        },
+      })}
     >
-      <Stack.Screen name="MiPerfil" component={PerfilScreen} options={{ title: 'Mi perfil' }} />
-      <Stack.Screen name="Admin" component={AdminScreen} options={{ title: 'Estudios pendientes' }} />
-      <Stack.Screen name="Usuarios" component={UsuariosScreen} options={{ title: 'Usuarios' }} />
-      <Stack.Screen name="EstudioDetalle" component={EstudioDetalleScreen} options={{ title: '' }} />
-    </Stack.Navigator>
+      <Tab.Screen name="Inicio" component={InicioScreen} />
+      <Tab.Screen name="Estudios" component={EstudiosScreen} options={{ title: 'Estudios' }} />
+      <Tab.Screen name="Biblia" component={BibliaScreen} />
+      {tienePanel && (
+        <Tab.Screen name="Panel" component={AdminScreen} options={{ title: 'Panel' }} />
+      )}
+      <Tab.Screen name="Perfil" component={PerfilScreen} />
+    </Tab.Navigator>
   );
 }
 
 export default function AppNavigator() {
-  const { colores, modoOscuro } = useTheme();
-
-  const temaNavegacion = {
-    ...(modoOscuro ? DarkTheme : DefaultTheme),
-    colors: {
-      ...(modoOscuro ? DarkTheme.colors : DefaultTheme.colors),
-      background: colores.fondo,
-      card: colores.fondo,
-      text: colores.texto,
-      border: colores.borde,
-      primary: colores.primario,
-    },
-  };
+  const { colores } = useTheme();
 
   return (
-    <NavigationContainer theme={temaNavegacion}>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarActiveTintColor: colores.primario,
-          tabBarInactiveTintColor: colores.textoTenue,
-          tabBarStyle: {
-            backgroundColor: colores.fondo,
-            borderTopColor: colores.borde,
-          },
-          tabBarIcon: ({ color, size }) => {
-            let nombreIcono = 'person-outline';
-            if (route.name === 'Inicio') nombreIcono = 'home-outline';
-            if (route.name === 'Estudios') nombreIcono = 'book-outline';
-            return <Ionicons name={nombreIcono} size={size} color={color} />;
-          },
-        })}
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: colores.superficie },
+          headerTintColor: colores.texto,
+          headerTitleStyle: { color: colores.texto },
+          headerShadowVisible: false,
+        }}
       >
-        <Tab.Screen name="Inicio" component={PilaInicio} />
-        <Tab.Screen name="Estudios" component={PilaEstudios} />
-        <Tab.Screen name="Perfil" component={PilaPerfil} />
-      </Tab.Navigator>
+        <Stack.Screen name="Pestanas" component={Pestanas} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="CrearEstudio"
+          component={CrearEstudioScreen}
+          options={{ title: 'Crear estudio' }}
+        />
+        <Stack.Screen
+          name="EstudioDetalle"
+          component={EstudioDetalleScreen}
+          options={{ title: '' }}
+        />
+        <Stack.Screen
+          name="Favoritos"
+          component={FavoritosScreen}
+          options={{ title: 'Mis favoritos' }}
+        />
+        <Stack.Screen
+          name="MisEstudios"
+          component={MisEstudiosScreen}
+          options={{ title: 'Mis estudios' }}
+        />
+        <Stack.Screen
+          name="VersiculosFavoritos"
+          component={VersiculosFavoritosScreen}
+          options={{ title: 'Mis versículos' }}
+        />
+        <Stack.Screen
+          name="Ayuda"
+          component={AyudaScreen}
+          options={{ title: 'Ayuda y soporte' }}
+        />
+        <Stack.Screen
+          name="Usuarios"
+          component={UsuariosScreen}
+          options={{ title: 'Usuarios' }}
+        />
+        <Stack.Screen
+          name="Notas"
+          component={NotasScreen}
+          options={{ title: 'Mis apuntes' }}
+        />
+        <Stack.Screen
+          name="NotaDetalle"
+          component={NotaDetalleScreen}
+          options={{ title: '' }}
+        />
+        <Stack.Screen
+          name="LineaDeTiempo"
+          component={LineaDeTiempoScreen}
+          options={{ title: 'Tu camino con Dios' }}
+        />
+        <Stack.Screen
+          name="DiarioOracion"
+          component={DiarioOracionScreen}
+          options={{ title: 'Diario de oración' }}
+        />
+        <Stack.Screen
+          name="EstadoAnimo"
+          component={EstadoAnimoScreen}
+          options={{ title: '¿Cómo te sientes?' }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

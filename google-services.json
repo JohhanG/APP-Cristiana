@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "711669912706",
+    "firebase_url": "https://login-user-6e76f-default-rtdb.firebaseio.com",
+    "project_id": "login-user-6e76f",
+    "storage_bucket": "login-user-6e76f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711669912706:android:0211bbc8dbe5164eb5509b",
+        "android_client_info": {
+          "package_name": "com.tunombre.mana"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711669912706-p8ku4h1lq62td5rc8ksvafen88347eqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzDTfglXyIOpiqeJXHuZ0Q8Kp4pqzzmc4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711669912706-p8ku4h1lq62td5rc8ksvafen88347eqh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "711669912706-kjmejpg6blu5aqndh362qi0g681lgd2v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alvish.spotifyredesign"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,6 +21,7 @@
     },
     "android": {
       "package": "com.tunombre.mana",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#3C3489"
@@ -29,10 +30,26 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/adaptive-icon.png",
+          "color": "#3C3489"
+        }
+      ],
+      "expo-font"
+    ],
     "extra": {
       "eas": {
         "projectId": "bf9a70a9-6d4b-4660-9704-2a025069bce3"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bf9a70a9-6d4b-4660-9704-2a025069bce3"
     }
   }
 }
