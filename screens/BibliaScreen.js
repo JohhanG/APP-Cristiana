@@ -30,7 +30,7 @@ export default function BibliaScreen({ navigation }) {
   const styles = crearEstilos(colores);
  
   const [version, setVersion] = useState('RV1960');
-  const [libroNumero, setLibroNumero] = useState(43); // Juan, por defecto
+  const [libroNumero, setLibroNumero] = useState(1); // Génesis, por defecto
   const [capitulo, setCapitulo] = useState(1);
   const [versiculos, setVersiculos] = useState([]);
   const [interacciones, setInteracciones] = useState({}); // { [numeroVerso]: { favorito, color_resaltado } }
@@ -52,7 +52,7 @@ export default function BibliaScreen({ navigation }) {
       if (guardado) {
         const datos = JSON.parse(guardado);
         setVersion(datos.version || 'RV1960');
-        setLibroNumero(datos.libroNumero || 43);
+        setLibroNumero(datos.libroNumero || 1);
         setCapitulo(datos.capitulo || 1);
       }
     });

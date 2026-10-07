@@ -48,12 +48,13 @@ export default function MisEstudiosScreen({ navigation }) {
       .eq('autor_id', user.id)
       .order('creado_en', { ascending: false });
  
-    if (!error) setEstudios(data);
+    if (!error) setEstudios(data || []);
     setCargando(false);
     setRefrescando(false);
   }
  
   useEffect(() => {
+    cargarMisEstudios();
     const unsubscribe = navigation.addListener('focus', cargarMisEstudios);
     return unsubscribe;
   }, [navigation]);

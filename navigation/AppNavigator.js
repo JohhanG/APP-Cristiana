@@ -23,6 +23,8 @@ import NotaDetalleScreen from '../screens/NotaDetalleScreen';
 import LineaDeTiempoScreen from '../screens/LineaDeTiempoScreen';
 import DiarioOracionScreen from '../screens/DiarioOracionScreen';
 import EstadoAnimoScreen from '../screens/EstadoAnimoScreen';
+import DevocionalesScreen from '../screens/DevocionalesScreen';
+import DevocionalDetalleScreen from '../screens/DevocionalDetalleScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -157,6 +159,16 @@ export default function AppNavigator() {
           name="EstadoAnimo"
           component={EstadoAnimoScreen}
           options={{ title: '¿Cómo te sientes?' }}
+        />
+        <Stack.Screen
+          name="Devocionales"
+          component={DevocionalesScreen}
+          options={{ title: 'Devocionales' }}
+        />
+        <Stack.Screen
+          name="DevocionalDetalle"
+          component={DevocionalDetalleScreen}
+          options={{ title: '' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

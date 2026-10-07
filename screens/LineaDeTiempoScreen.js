@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
+import { obtenerSuscripcionesLocales, ESTUDIOS_SEMILLA } from '../lib/estudiosService';
 
 const CONFIG_TIPO = {
   lectura: { icono: 'flame', color: '#F59E0B' },
@@ -41,7 +42,7 @@ export default function LineaDeTiempoScreen({ navigation }) {
       return;
     }
 
-    const [lecturas, completados, favoritos, apuntes, estudiosCreados] = await Promise.all([
+    const [lecturas, completados, favoritos, apuntes, estudiosCreados, suscripcionesLocales] = await Promise.all([
       supabase.from('lecturas_diarias').select('fecha').eq('usuario_id', user.id).order('fecha', { ascending: false }).limit(60),
       supabase
         .from('progreso_usuario')
@@ -70,6 +71,7 @@ export default function LineaDeTiempoScreen({ navigation }) {
         .eq('estado', 'publicado')
         .order('creado_en', { ascending: false })
         .limit(30),
+      obtenerSuscripcionesLocales(user.id),
     ]);
 
     const listaEventos = [];
@@ -87,6 +89,15 @@ export default function LineaDeTiempoScreen({ navigation }) {
         tipo: 'estudio_completado',
         fecha: c.ultima_actividad,
         texto: `Completaste el estudio "${c.estudios?.titulo || 'un estudio'}"`,
+      });
+    });
+
+    (suscripcionesLocales || []).filter((l) => l.completado).forEach((l) => {
+      const semilla = ESTUDIOS_SEMILLA.find((s) => s.id === l.estudio_id);
+      listaEventos.push({
+        tipo: 'estudio_completado',
+        fecha: l.ultima_actividad || new Date().toISOString(),
+        texto: `Completaste el estudio "${semilla?.titulo || 'un estudio'}"`,
       });
     });
 

@@ -9,8 +9,10 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
+import { esUUID, ESTUDIOS_SEMILLA } from '../lib/estudiosService';
  
 export default function FavoritosScreen({ navigation }) {
   const { colores } = useTheme();
@@ -28,20 +30,49 @@ export default function FavoritosScreen({ navigation }) {
       return;
     }
  
-    const { data, error } = await supabase
-      .from('favoritos')
-      .select('estudio_id, estudios(id, titulo, tema, num_dias, perfiles!autor_id(nombre_usuario))')
-      .eq('usuario_id', user.id)
-      .order('creado_en', { ascending: false });
- 
-    if (!error && data) {
-      setFavoritos(data.filter((fila) => fila.estudios).map((fila) => fila.estudios));
+    try {
+      const [favDbRes, favLocalesRaw] = await Promise.all([
+        supabase
+          .from('favoritos')
+          .select('estudio_id, estudios(id, titulo, tema, num_dias, perfiles!autor_id(nombre_usuario))')
+          .eq('usuario_id', user.id)
+          .order('creado_en', { ascending: false }),
+        AsyncStorage.getItem(`fav_estudios_${user.id}`),
+      ]);
+
+      const lista = [];
+      if (favDbRes?.data) {
+        favDbRes.data.filter((fila) => fila.estudios).forEach((fila) => lista.push(fila.estudios));
+      }
+
+      if (favLocalesRaw) {
+        try {
+          const idsLocales = JSON.parse(favLocalesRaw) || [];
+          idsLocales.forEach((estudioId) => {
+            if (!lista.some((e) => e.id === estudioId)) {
+              const semilla = ESTUDIOS_SEMILLA.find((s) => s.id === estudioId);
+              if (semilla) {
+                lista.push({
+                  ...semilla,
+                  perfiles: { nombre_usuario: 'Manna Pastoral' },
+                });
+              }
+            }
+          });
+        } catch (_) {}
+      }
+
+      setFavoritos(lista);
+    } catch (e) {
+      console.log('Error cargando favoritos:', e.message);
+    } finally {
+      setCargando(false);
+      setRefrescando(false);
     }
-    setCargando(false);
-    setRefrescando(false);
   }
  
   useEffect(() => {
+    cargarFavoritos();
     const unsubscribe = navigation.addListener('focus', cargarFavoritos);
     return unsubscribe;
   }, [navigation]);
@@ -56,7 +87,18 @@ export default function FavoritosScreen({ navigation }) {
     if (!user) return;
  
     setFavoritos((actual) => actual.filter((e) => e.id !== estudioId));
-    await supabase.from('favoritos').delete().eq('usuario_id', user.id).eq('estudio_id', estudioId);
+
+    if (esUUID(estudioId)) {
+      await supabase.from('favoritos').delete().eq('usuario_id', user.id).eq('estudio_id', estudioId);
+    }
+
+    try {
+      const favLocalesRaw = await AsyncStorage.getItem(`fav_estudios_${user.id}`);
+      if (favLocalesRaw) {
+        const ids = JSON.parse(favLocalesRaw).filter((id) => id !== estudioId);
+        await AsyncStorage.setItem(`fav_estudios_${user.id}`, JSON.stringify(ids));
+      }
+    } catch (_) {}
   }
  
   if (cargando) {

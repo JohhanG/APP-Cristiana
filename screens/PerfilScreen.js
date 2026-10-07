@@ -14,6 +14,7 @@ import {
   FlatList,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import {
@@ -230,7 +231,11 @@ export default function PerfilScreen({ navigation }) {
   }
 
   return (
-    <ScrollView style={styles.contenedor} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
+    <SafeAreaView style={styles.contenedor} edges={['top']}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 60 }}
+      >
 
       <View style={styles.encabezadoPerfil}>
         <TouchableOpacity style={styles.avatar} onPress={cambiarFotoPerfil} disabled={subiendoFoto}>
@@ -567,6 +572,7 @@ export default function PerfilScreen({ navigation }) {
       </Modal>
 
     </ScrollView>
+  </SafeAreaView>
   );
 }
 

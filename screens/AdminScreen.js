@@ -3,6 +3,7 @@ import {
   View,
   Text,
   FlatList,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -16,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import { enviarNotificacionAUsuario } from '../lib/notificaciones';
+import { generarEstudioCompletoConIA, DURACIONES_ESTUDIO } from '../lib/estudiosService';
 
 export default function AdminScreen({ navigation }) {
   const { colores } = useTheme();
@@ -40,57 +42,74 @@ export default function AdminScreen({ navigation }) {
   const [ticketAResponder, setTicketAResponder] = useState(null);
   const [textoRespuesta, setTextoRespuesta] = useState('');
 
+  // Generador de estudios con IA
+  const [modalIaEstudioVisible, setModalIaEstudioVisible] = useState(false);
+  const [iaLibro, setIaLibro] = useState('');
+  const [iaTema, setIaTema] = useState('');
+  const [iaNumDias, setIaNumDias] = useState(7);
+  const [iaPublicarDirecto, setIaPublicarDirecto] = useState(true);
+  const [generandoIaEstudio, setGenerandoIaEstudio] = useState(false);
+
   async function cargarTodo() {
-    const { data: { user } } = await supabase.auth.getUser();
-    let rolActual = miRol;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      let rolActual = miRol;
 
-    if (user) {
-      const { data: perfil } = await supabase.from('perfiles').select('rol').eq('id', user.id).single();
-      rolActual = perfil?.rol || null;
-      setMiRol(rolActual);
-    }
+      if (user) {
+        const { data: perfil } = await supabase.from('perfiles').select('rol').eq('id', user.id).maybeSingle();
+        rolActual = perfil?.rol || null;
+        setMiRol(rolActual);
+      }
 
-    const { data: pendientesData, error: errorPendientes } = await supabase
-      .from('estudios')
-      .select('id, titulo, tema, num_dias, creado_en, autor_id, perfiles!autor_id(nombre_usuario)')
-      .eq('estado', 'pendiente')
-      .order('creado_en', { ascending: true });
-
-    if (errorPendientes) {
-      Alert.alert('Error al cargar pendientes', errorPendientes.message);
-    } else {
-      setPendientes(pendientesData);
-    }
-
-    // Lo siguiente solo aplica para administradores
-    if (rolActual === 'admin') {
-      const { data: eliminacionesData, error: errorEliminaciones } = await supabase
+      const { data: pendientesData, error: errorPendientes } = await supabase
         .from('estudios')
-        .select('id, titulo, tema, num_dias, motivo_eliminacion, autor_id, perfiles!autor_id(nombre_usuario)')
-        .eq('solicitud_eliminacion', true)
+        .select('id, titulo, tema, num_dias, creado_en, autor_id, perfiles!autor_id(nombre_usuario)')
+        .eq('estado', 'pendiente')
         .order('creado_en', { ascending: true });
-      if (!errorEliminaciones) setEliminaciones(eliminacionesData);
 
-      const { data: ticketsData, error: errorTickets } = await supabase
-        .from('tickets')
-        .select('*, perfiles!usuario_id(nombre_usuario)')
-        .order('creado_en', { ascending: false });
-      if (!errorTickets) setTickets(ticketsData);
+      if (errorPendientes) {
+        console.log('Error al cargar pendientes:', errorPendientes.message);
+        setPendientes([]);
+      } else {
+        setPendientes(pendientesData || []);
+      }
 
-      const { data: historialData, error: errorHistorial } = await supabase
-        .from('estudios')
-        .select('id, titulo, estado, revisado_en, perfiles!revisado_por(nombre_usuario)')
-        .not('revisado_por', 'is', null)
-        .order('revisado_en', { ascending: false })
-        .limit(100);
-      if (!errorHistorial) setHistorialRevision(historialData);
+      // Lo siguiente solo aplica para administradores
+      if (rolActual === 'admin') {
+        const { data: eliminacionesData, error: errorEliminaciones } = await supabase
+          .from('estudios')
+          .select('id, titulo, tema, num_dias, motivo_eliminacion, autor_id, perfiles!autor_id(nombre_usuario)')
+          .eq('solicitud_eliminacion', true)
+          .order('creado_en', { ascending: true });
+        if (!errorEliminaciones) setEliminaciones(eliminacionesData || []);
+        else setEliminaciones([]);
+
+        const { data: ticketsData, error: errorTickets } = await supabase
+          .from('tickets')
+          .select('*, perfiles!usuario_id(nombre_usuario)')
+          .order('creado_en', { ascending: false });
+        if (!errorTickets) setTickets(ticketsData || []);
+        else setTickets([]);
+
+        const { data: historialData, error: errorHistorial } = await supabase
+          .from('estudios')
+          .select('id, titulo, estado, revisado_en, perfiles!revisado_por(nombre_usuario)')
+          .not('revisado_por', 'is', null)
+          .order('revisado_en', { ascending: false })
+          .limit(100);
+        if (!errorHistorial) setHistorialRevision(historialData || []);
+        else setHistorialRevision([]);
+      }
+    } catch (err) {
+      console.log('Error en cargarTodo:', err.message);
+    } finally {
+      setCargando(false);
+      setRefrescando(false);
     }
-
-    setCargando(false);
-    setRefrescando(false);
   }
 
   useEffect(() => {
+    cargarTodo();
     const unsubscribe = navigation.addListener('focus', cargarTodo);
     return unsubscribe;
   }, [navigation]);
@@ -266,6 +285,35 @@ export default function AdminScreen({ navigation }) {
     );
   }
 
+  async function ejecutarGeneracionIaEstudio() {
+    if (!iaLibro.trim()) {
+      Alert.alert('Falta el pasaje', 'Ingresa el libro o capítulos sobre los que deseas generar el estudio (ej. Romanos 8).');
+      return;
+    }
+
+    setGenerandoIaEstudio(true);
+    const resultado = await generarEstudioCompletoConIA({
+      libroOCapitulo: iaLibro.trim(),
+      tema: iaTema.trim() || 'Crecimiento espiritual',
+      numDias: iaNumDias,
+      publicarDirecto: iaPublicarDirecto,
+    });
+    setGenerandoIaEstudio(false);
+
+    if (resultado.exito) {
+      setModalIaEstudioVisible(false);
+      setIaLibro('');
+      setIaTema('');
+      Alert.alert(
+        '¡Estudio bíblico generado! 🎉',
+        `El plan de ${iaNumDias} días sobre "${resultado.estudio?.titulo}" ha sido ${iaPublicarDirecto ? 'publicado para la comunidad' : 'enviado a pendientes'}.`
+      );
+      cargarTodo();
+    } else {
+      Alert.alert('Error', 'No se pudo generar el estudio bíblico. Intenta nuevamente.');
+    }
+  }
+
   if (cargando) {
     return (
       <View style={[styles.centrado, { backgroundColor: colores.fondo }]}>
@@ -275,7 +323,9 @@ export default function AdminScreen({ navigation }) {
   }
 
   const esAdmin = miRol === 'admin';
-  const ticketsAbiertos = tickets.filter((t) => t.estado === 'abierto').length;
+  const ticketsAbiertos = (tickets || []).filter((t) => t?.estado === 'abierto').length;
+  const cantPendientes = (pendientes || []).length;
+  const cantEliminaciones = (eliminaciones || []).length;
 
   return (
     <SafeAreaView style={styles.contenedor} edges={['top']}>
@@ -304,7 +354,7 @@ export default function AdminScreen({ navigation }) {
             onPress={() => setVista('pendientes')}
           >
             <Text style={[styles.textoPestana, vista === 'pendientes' && styles.textoPestanaActiva]}>
-              Pendientes {pendientes.length > 0 ? `(${pendientes.length})` : ''}
+              Pendientes {cantPendientes > 0 ? `(${cantPendientes})` : ''}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -312,7 +362,7 @@ export default function AdminScreen({ navigation }) {
             onPress={() => setVista('eliminaciones')}
           >
             <Text style={[styles.textoPestana, vista === 'eliminaciones' && styles.textoPestanaActiva]}>
-              Eliminar {eliminaciones.length > 0 ? `(${eliminaciones.length})` : ''}
+              Eliminar {cantEliminaciones > 0 ? `(${cantEliminaciones})` : ''}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -338,6 +388,23 @@ export default function AdminScreen({ navigation }) {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: 16 }}
           refreshControl={<RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={colores.primario} />}
+          ListHeaderComponent={
+            <TouchableOpacity
+              style={styles.botonGenerarIaHeader}
+              onPress={() => setModalIaEstudioVisible(true)}
+            >
+              <View style={styles.iconoGenerarIa}>
+                <Ionicons name="sparkles" size={18} color="#6366F1" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tituloBotonGenerarIa}>Generar estudio con IA</Text>
+                <Text style={styles.subtituloBotonGenerarIa}>
+                  Crea planes de 7, 15 o 30 días sobre cualquier pasaje bíblico
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={colores.textoTenue} />
+            </TouchableOpacity>
+          }
           ListEmptyComponent={
             <View style={styles.vacioContenedor}>
               <Ionicons name="checkmark-done-circle-outline" size={40} color={colores.textoTenue} />
@@ -547,7 +614,6 @@ export default function AdminScreen({ navigation }) {
               value={motivoRechazo}
               onChangeText={setMotivoRechazo}
               multiline
-              autoFocus
             />
             <View style={styles.filaBotonesModal}>
               <TouchableOpacity style={styles.botonCancelarModal} onPress={() => setModalRechazoVisible(false)}>
@@ -574,7 +640,6 @@ export default function AdminScreen({ navigation }) {
               value={textoRespuesta}
               onChangeText={setTextoRespuesta}
               multiline
-              autoFocus
             />
             <View style={styles.filaBotonesModal}>
               <TouchableOpacity style={styles.botonCancelarModal} onPress={() => setModalRespuestaVisible(false)}>
@@ -582,6 +647,120 @@ export default function AdminScreen({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity style={styles.botonEnviarModal} onPress={enviarRespuestaTicket}>
                 <Text style={styles.textoBotonEnviarModal}>Enviar respuesta</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: Generar Estudio Bíblico con IA */}
+      <Modal
+        visible={modalIaEstudioVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => !generandoIaEstudio && setModalIaEstudioVisible(false)}
+      >
+        <View style={styles.fondoModal}>
+          <View style={[styles.cajaModal, { maxHeight: '90%' }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="sparkles" size={20} color="#6366F1" />
+                <Text style={styles.tituloModal}>Generar estudio con IA</Text>
+              </View>
+              {!generandoIaEstudio && (
+                <TouchableOpacity onPress={() => setModalIaEstudioVisible(false)}>
+                  <Ionicons name="close" size={22} color={colores.textoTenue} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={styles.subtituloModal}>
+                Crea un plan devocional completo de varios días con reflexiones y preguntas basadas en la Biblia.
+              </Text>
+
+              <Text style={styles.etiquetaCampo}>Libro o Pasaje bíblico:</Text>
+              <TextInput
+                style={styles.inputSimple}
+                placeholder="Ej. Romanos 8, Efesios, Mateo 5-7..."
+                placeholderTextColor={colores.textoTenue}
+                value={iaLibro}
+                onChangeText={setIaLibro}
+                editable={!generandoIaEstudio}
+              />
+
+              <Text style={[styles.etiquetaCampo, { marginTop: 12 }]}>Tema o Enfoque espiritual:</Text>
+              <TextInput
+                style={styles.inputSimple}
+                placeholder="Ej. Vida en el Espíritu, Fe en las pruebas..."
+                placeholderTextColor={colores.textoTenue}
+                value={iaTema}
+                onChangeText={setIaTema}
+                editable={!generandoIaEstudio}
+              />
+
+              <Text style={[styles.etiquetaCampo, { marginTop: 14 }]}>Duración del estudio:</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
+                {DURACIONES_ESTUDIO.map((d) => {
+                  const seleccionado = iaNumDias === d.id;
+                  return (
+                    <TouchableOpacity
+                      key={d.id}
+                      style={[
+                        styles.chipDuracionModal,
+                        seleccionado && { backgroundColor: d.color, borderColor: d.color },
+                      ]}
+                      onPress={() => setIaNumDias(d.id)}
+                      disabled={generandoIaEstudio}
+                    >
+                      <Text style={[styles.textoChipDuracion, seleccionado && { color: '#fff', fontWeight: '700' }]}>
+                        {d.etiqueta}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <View style={styles.filaSwitchPublicar}>
+                <TouchableOpacity
+                  style={[styles.botonOpcionPublicar, iaPublicarDirecto && styles.botonOpcionPublicarActivo]}
+                  onPress={() => setIaPublicarDirecto(true)}
+                  disabled={generandoIaEstudio}
+                >
+                  <Text style={[styles.textoOpcionPublicar, iaPublicarDirecto && styles.textoOpcionPublicarActivo]}>
+                    Publicar de inmediato
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.botonOpcionPublicar, !iaPublicarDirecto && styles.botonOpcionPublicarActivo]}
+                  onPress={() => setIaPublicarDirecto(false)}
+                  disabled={generandoIaEstudio}
+                >
+                  <Text style={[styles.textoOpcionPublicar, !iaPublicarDirecto && styles.textoOpcionPublicarActivo]}>
+                    Guardar como pendiente
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+
+            <View style={styles.filaBotonesModal}>
+              <TouchableOpacity
+                style={styles.botonCancelarModal}
+                onPress={() => setModalIaEstudioVisible(false)}
+                disabled={generandoIaEstudio}
+              >
+                <Text style={styles.textoBotonCancelarModal}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.botonEnviarModal, { backgroundColor: '#6366F1' }]}
+                onPress={ejecutarGeneracionIaEstudio}
+                disabled={generandoIaEstudio}
+              >
+                {generandoIaEstudio ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={styles.textoBotonEnviarModal}>Generar estudio ({iaNumDias} días)</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -673,6 +852,95 @@ function crearEstilos(colores) {
     botonCancelarModal: { flex: 1, borderWidth: 1, borderColor: colores.borde, borderRadius: 8, padding: 12, alignItems: 'center' },
     textoBotonCancelarModal: { color: colores.texto, fontWeight: '600' },
     botonEnviarModal: { flex: 1, backgroundColor: colores.peligro, borderRadius: 8, padding: 12, alignItems: 'center' },
-    textoBotonEnviarModal: { color: '#fff', fontWeight: '600' },
+    textoBotonEnviarModal: { color: '#fff', fontWeight: '600', textAlign: 'center' },
+
+    botonGenerarIaHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#6366F112',
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 14,
+      borderWidth: 1,
+      borderColor: '#6366F135',
+      gap: 12,
+    },
+    iconoGenerarIa: {
+      width: 38,
+      height: 38,
+      borderRadius: 12,
+      backgroundColor: '#6366F125',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    tituloBotonGenerarIa: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: colores.texto,
+    },
+    subtituloBotonGenerarIa: {
+      fontSize: 11,
+      color: colores.textoSecundario,
+      marginTop: 2,
+    },
+    etiquetaCampo: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: colores.textoSecundario,
+      marginBottom: 6,
+    },
+    inputSimple: {
+      backgroundColor: colores.fondo,
+      borderWidth: 1,
+      borderColor: colores.borde,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 14,
+      color: colores.texto,
+    },
+    chipDuracionModal: {
+      flex: 1,
+      paddingVertical: 8,
+      borderRadius: 10,
+      backgroundColor: colores.fondo,
+      borderWidth: 1,
+      borderColor: colores.borde,
+      alignItems: 'center',
+    },
+    textoChipDuracion: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: colores.textoSecundario,
+      textAlign: 'center',
+    },
+    filaSwitchPublicar: {
+      flexDirection: 'row',
+      gap: 8,
+      marginTop: 16,
+      marginBottom: 10,
+    },
+    botonOpcionPublicar: {
+      flex: 1,
+      paddingVertical: 8,
+      borderRadius: 8,
+      backgroundColor: colores.fondo,
+      borderWidth: 1,
+      borderColor: colores.borde,
+      alignItems: 'center',
+    },
+    botonOpcionPublicarActivo: {
+      backgroundColor: colores.primario,
+      borderColor: colores.primario,
+    },
+    textoOpcionPublicar: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: colores.textoSecundario,
+    },
+    textoOpcionPublicarActivo: {
+      color: colores.primarioTexto,
+      fontWeight: '700',
+    },
   });
 }

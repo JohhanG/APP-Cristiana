@@ -9,6 +9,7 @@ import OnboardingScreen from './screens/OnboardingScreen';
 import AppNavigator from './navigation/AppNavigator';
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import { registrarParaNotificaciones } from './lib/notificaciones';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Lee los parámetros que Supabase manda dentro del enlace del correo
 // (vienen después del # como access_token=...&type=recovery, etc.)
@@ -70,15 +71,32 @@ function AppInterno() {
   }, [sesion]);
 
   async function verificarOnboarding(usuarioId) {
-    setRevisandoOnboarding(true);
-    const { data } = await supabase
-      .from('perfiles')
-      .select('onboarding_completado')
-      .eq('id', usuarioId)
-      .single();
+    try {
+      const local = await AsyncStorage.getItem('onboarding_completado_' + usuarioId);
+      if (local === 'true') {
+        setNecesitaOnboarding(false);
+        return;
+      }
+    } catch {}
 
-    setNecesitaOnboarding(data ? !data.onboarding_completado : false);
-    setRevisandoOnboarding(false);
+    setRevisandoOnboarding(true);
+    try {
+      const { data } = await supabase
+        .from('perfiles')
+        .select('onboarding_completado')
+        .eq('id', usuarioId)
+        .maybeSingle();
+
+      const completado = !!data?.onboarding_completado;
+      setNecesitaOnboarding(!completado);
+      if (completado) {
+        AsyncStorage.setItem('onboarding_completado_' + usuarioId, 'true').catch(() => {});
+      }
+    } catch {
+      setNecesitaOnboarding(false);
+    } finally {
+      setRevisandoOnboarding(false);
+    }
   }
 
   useEffect(() => {

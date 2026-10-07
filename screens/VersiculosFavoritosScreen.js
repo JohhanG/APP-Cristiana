@@ -29,6 +29,7 @@ export default function VersiculosFavoritosScreen({ navigation }) {
   }
 
   useEffect(() => {
+    cargar();
     const unsubscribe = navigation.addListener('focus', cargar);
     return unsubscribe;
   }, [navigation]);

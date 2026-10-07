@@ -48,7 +48,7 @@ export default function DiarioOracionScreen() {
       .eq('usuario_id', user.id)
       .order('creado_en', { ascending: false });
 
-    if (!error) setOraciones(data);
+    if (!error) setOraciones(data || []);
     setCargando(false);
     setRefrescando(false);
   }

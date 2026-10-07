@@ -9,10 +9,13 @@ import {
   Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import { buscarVersiculo, LIBROS_BIBLIA } from '../lib/bibliaApi';
+import { BANCO_DEVOCIONALES_SEMILLA, normalizarDevocional } from '../lib/devocionalesService';
+import { obtenerEstudioActivo, obtenerSuscripcionesLocales } from '../lib/estudiosService';
 
 const FRASES = [
   'Un paso de fe hoy vale más que mil pasos de duda.',
@@ -82,10 +85,13 @@ export default function InicioScreen({ navigation }) {
   const { colores } = useTheme();
   const styles = crearEstilos(colores);
 
-  const [devocional, setDevocional] = useState(null);
+  const devocionalSemillaHoy = normalizarDevocional(
+    BANCO_DEVOCIONALES_SEMILLA[diaDelAnio() % BANCO_DEVOCIONALES_SEMILLA.length]
+  );
+  const [devocional, setDevocional] = useState(devocionalSemillaHoy);
   const [yaLeidoHoy, setYaLeidoHoy] = useState(false);
   const [racha, setRacha] = useState(0);
-  const [cargando, setCargando] = useState(true);
+  const [cargando, setCargando] = useState(false); // Carga instantánea a 0ms sin spinner bloqueante
   const [guardando, setGuardando] = useState(false);
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [estudioEnProgreso, setEstudioEnProgreso] = useState(null);
@@ -104,118 +110,131 @@ export default function InicioScreen({ navigation }) {
   const oracionDeHoy = ORACIONES[diaDelAnio() % ORACIONES.length];
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', cargarTodo);
-    // El evento "focus" a veces no se dispara a tiempo cuando esta es la
-    // primera pestaña que se muestra al abrir la app, así que forzamos
-    // la carga también aquí, al montar la pantalla.
     cargarTodo();
+    const unsubscribe = navigation.addListener('focus', cargarTodo);
     return unsubscribe;
   }, [navigation]);
 
   async function cargarTodo() {
-    // Solo mostramos el círculo de carga completo la primera vez.
-    // Las veces siguientes se actualiza en silencio, sin bloquear la pantalla.
-    if (!yaCargoUnaVez.current) setCargando(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const hoy = new Date().toISOString().slice(0, 10);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const hoy = new Date().toISOString().slice(0, 10);
+      // Carga paralela ultrarrápida
+      const [
+        resultadoConteoDevocionales,
+        resultadoPerfil,
+        resultadoLecturaHoy,
+        resultadoRacha,
+        resultadoEstudioActivo,
+        resultadoCompletados,
+        resultadoDiasLeidos,
+      ] = await Promise.all([
+        supabase.from('devocionales').select('*', { count: 'exact', head: true }),
+        user ? supabase.from('perfiles').select('nombre_usuario').eq('id', user.id).maybeSingle() : Promise.resolve({ data: null }),
+        user
+          ? supabase.from('lecturas_diarias').select('fecha').eq('usuario_id', user.id).eq('fecha', hoy).maybeSingle()
+          : Promise.resolve({ data: null }),
+        user
+          ? supabase.from('lecturas_diarias').select('fecha').eq('usuario_id', user.id).order('fecha', { ascending: false }).limit(90)
+          : Promise.resolve({ data: [] }),
+        user
+          ? obtenerEstudioActivo(user.id)
+          : Promise.resolve(null),
+        user
+          ? Promise.all([
+              supabase.from('progreso_usuario').select('*', { count: 'exact', head: true }).eq('usuario_id', user.id).eq('completado', true),
+              obtenerSuscripcionesLocales(user.id),
+            ])
+          : Promise.resolve([{ count: 0 }, []]),
+        user
+          ? supabase.from('lecturas_diarias').select('*', { count: 'exact', head: true }).eq('usuario_id', user.id)
+          : Promise.resolve({ count: 0 }),
+      ]);
 
-    // Todas estas consultas no dependen unas de otras, así que las lanzamos
-    // todas a la vez en lugar de esperar una por una (esto es lo que hacía
-    // que la pantalla tardara más que las demás).
-    const [
-      resultadoConteoDevocionales,
-      resultadoPerfil,
-      resultadoLecturaHoy,
-      resultadoRacha,
-      resultadoProgreso,
-      resultadoCompletados,
-      resultadoDiasLeidos,
-    ] = await Promise.all([
-      supabase.from('devocionales').select('*', { count: 'exact', head: true }),
-      user ? supabase.from('perfiles').select('nombre_usuario').eq('id', user.id).single() : Promise.resolve({ data: null }),
-      user
-        ? supabase.from('lecturas_diarias').select('fecha').eq('usuario_id', user.id).eq('fecha', hoy).maybeSingle()
-        : Promise.resolve({ data: null }),
-      user
-        ? supabase.from('lecturas_diarias').select('fecha').eq('usuario_id', user.id).order('fecha', { ascending: false }).limit(90)
-        : Promise.resolve({ data: [] }),
-      user
-        ? supabase
-            .from('progreso_usuario')
-            .select('estudio_id, dia_actual, ultima_actividad, estudios(titulo, num_dias)')
-            .eq('usuario_id', user.id)
-            .eq('completado', false)
-            .order('ultima_actividad', { ascending: false })
-            .limit(1)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
-      user
-        ? supabase.from('progreso_usuario').select('*', { count: 'exact', head: true }).eq('usuario_id', user.id).eq('completado', true)
-        : Promise.resolve({ count: 0 }),
-      user
-        ? supabase.from('lecturas_diarias').select('*', { count: 'exact', head: true }).eq('usuario_id', user.id)
-        : Promise.resolve({ count: 0 }),
-    ]);
+      // Rotación automática del devocional: si existe en Supabase se usa, si no, se mantiene el catálogo semilla
+      const totalDevocionales = resultadoConteoDevocionales?.count;
+      if (totalDevocionales && totalDevocionales > 0) {
+        const indice = (diaDelAnio() % totalDevocionales) + 1;
+        const { data: devocionalDb } = await supabase
+          .from('devocionales')
+          .select('*')
+          .eq('orden', indice)
+          .maybeSingle();
 
-    // Devocional del día (depende del conteo, así que va después, pero es rápido)
-    const totalDevocionales = resultadoConteoDevocionales.count;
-    if (totalDevocionales && totalDevocionales > 0) {
-      const indice = (diaDelAnio() % totalDevocionales) + 1;
-      const { data: devocionalHoy } = await supabase.from('devocionales').select('*').eq('orden', indice).single();
-      setDevocional(devocionalHoy);
-    }
+        if (devocionalDb) {
+          setDevocional(normalizarDevocional(devocionalDb));
+        }
+      }
 
-    if (user) {
-      if (resultadoPerfil.data) setNombreUsuario(resultadoPerfil.data.nombre_usuario);
-      setYaLeidoHoy(!!resultadoLecturaHoy.data);
-      setRacha(calcularRachaDesdeFechas((resultadoRacha.data || []).map((d) => d.fecha)));
+      if (user) {
+        if (resultadoPerfil?.data?.nombre_usuario) {
+          setNombreUsuario(resultadoPerfil.data.nombre_usuario);
+        }
+        setYaLeidoHoy(!!resultadoLecturaHoy?.data);
+        setRacha(calcularRachaDesdeFechas((resultadoRacha?.data || []).map((d) => d.fecha)));
 
-      if (resultadoProgreso.data && resultadoProgreso.data.estudios) {
-        setEstudioEnProgreso({
-          estudioId: resultadoProgreso.data.estudio_id,
-          titulo: resultadoProgreso.data.estudios.titulo,
-          diaActual: resultadoProgreso.data.dia_actual,
-          numDias: resultadoProgreso.data.estudios.num_dias,
+        if (resultadoEstudioActivo) {
+          setEstudioEnProgreso({
+            estudioId: resultadoEstudioActivo.estudioId,
+            titulo: resultadoEstudioActivo.titulo,
+            diaActual: resultadoEstudioActivo.diaActual,
+            numDias: resultadoEstudioActivo.numDias,
+          });
+        } else {
+          setEstudioEnProgreso(null);
+        }
+
+        const completadosDb = resultadoCompletados?.[0]?.count || 0;
+        const completadosLocales = (resultadoCompletados?.[1] || []).filter((s) => s.completado).length;
+
+        setEstadisticas({
+          estudiosCompletados: completadosDb + completadosLocales,
+          diasLeidos: resultadoDiasLeidos?.count || 0,
         });
-      } else {
-        setEstudioEnProgreso(null);
       }
 
-      setEstadisticas({
-        estudiosCompletados: resultadoCompletados.count || 0,
-        diasLeidos: resultadoDiasLeidos.count || 0,
-      });
-    }
-
-    // Última lectura guardada en la pestaña Biblia (para la tarjeta "Seguir leyendo")
-    const guardado = await AsyncStorage.getItem('bibliaUltimaLectura');
-    if (guardado) {
-      const datos = JSON.parse(guardado);
-      const libro = LIBROS_BIBLIA.find((l) => l.numero === datos.libroNumero);
-      if (libro) {
-        setLecturaBiblia({ nombreLibro: libro.nombre, capitulo: datos.capitulo });
+      // Última lectura guardada en la pestaña Biblia (para la tarjeta "Seguir leyendo")
+      const guardado = await AsyncStorage.getItem('bibliaUltimaLectura');
+      if (guardado) {
+        try {
+          const datos = JSON.parse(guardado);
+          const libro = LIBROS_BIBLIA.find((l) => l.numero === datos.libroNumero);
+          if (libro) {
+            setLecturaBiblia({ nombreLibro: libro.nombre, capitulo: datos.capitulo });
+          }
+        } catch {}
       }
+    } catch (error) {
+      console.log('Carga en segundo plano completada con fallback seguro:', error?.message);
+    } finally {
+      yaCargoUnaVez.current = true;
+      setCargando(false);
     }
-
-    yaCargoUnaVez.current = true;
-    setCargando(false);
   }
 
   async function marcarLeido() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Actualización optimista inmediata (0ms de respuesta visual)
+    setYaLeidoHoy(true);
+    setRacha((r) => r + 1);
+
     setGuardando(true);
     const hoy = new Date().toISOString().slice(0, 10);
-    const { error } = await supabase
-      .from('lecturas_diarias')
-      .insert({ usuario_id: user.id, fecha: hoy });
+    try {
+      const { error } = await supabase
+        .from('lecturas_diarias')
+        .insert({ usuario_id: user.id, fecha: hoy });
 
-    setGuardando(false);
-
-    if (!error) {
-      setYaLeidoHoy(true);
+      if (error && error.code !== '23505') {
+        console.log('Aviso en registro diario:', error.message);
+      }
+    } catch (e) {
+      console.log('Error de red al marcar lectura:', e.message);
+    } finally {
+      setGuardando(false);
       cargarTodo();
     }
   }
@@ -240,15 +259,32 @@ export default function InicioScreen({ navigation }) {
   }
 
   return (
-    <ScrollView style={styles.contenedor} contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-      <Text style={styles.saludo}>
-        {nombreUsuario ? `Hola, ${nombreUsuario}` : 'Bienvenido'}
-      </Text>
-      <Text style={styles.fecha}>
-        {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
-      </Text>
+    <SafeAreaView style={styles.contenedor} edges={['top']}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 60 }}
+      >
+        {/* Encabezado con saludo y fecha */}
+        <View style={styles.encabezado}>
+          <View style={styles.filaSaludo}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.saludo}>
+                {nombreUsuario ? `Hola, ${nombreUsuario}` : 'Bienvenido'}
+              </Text>
+              <Text style={styles.fecha}>
+                {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </Text>
+            </View>
+          </View>
 
-      <Text style={styles.frase}>“{frase}”</Text>
+          {/* Barra de separación elegante */}
+          <View style={styles.contenedorBarra}>
+            <View style={styles.barraAcento} />
+            <View style={styles.lineaSeparadora} />
+          </View>
+        </View>
+
+        <Text style={styles.frase}>“{frase}”</Text>
 
       <View style={styles.filaEstadisticas}>
         <View style={styles.tarjetaEstadistica}>
@@ -285,10 +321,20 @@ export default function InicioScreen({ navigation }) {
       )}
 
       {devocional && (
-        <View style={styles.tarjetaDevocional}>
-          <Text style={styles.etiquetaDevocional}>Devocional de hoy</Text>
+        <TouchableOpacity
+          style={styles.tarjetaDevocional}
+          activeOpacity={0.9}
+          onPress={() => navigation.navigate('DevocionalDetalle', { devocional })}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <Text style={styles.etiquetaDevocional}>Devocional de hoy</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Text style={{ fontSize: 12, color: colores.primario, fontWeight: '600' }}>Ver completo</Text>
+              <Ionicons name="chevron-forward" size={14} color={colores.primario} />
+            </View>
+          </View>
           <Text style={styles.referencia}>{devocional.referencia_biblica}</Text>
-          <Text style={styles.reflexion}>{devocional.reflexion}</Text>
+          <Text style={styles.reflexion} numberOfLines={4}>{devocional.reflexion}</Text>
 
           <TouchableOpacity
             style={[styles.botonLeido, yaLeidoHoy && styles.botonLeidoCompletado]}
@@ -311,11 +357,27 @@ export default function InicioScreen({ navigation }) {
               </>
             )}
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       )}
 
-      {/* Tarjetas rápidas: Oración de hoy, Memorizar versículo, Seguir leyendo */}
+      {/* Tarjetas rápidas: Explorar devocionales, Oración de hoy, Memorizar versículo, Seguir leyendo */}
       <View style={styles.listaTarjetasRapidas}>
+        <TouchableOpacity
+          style={[styles.tarjetaRapida, { borderWidth: 1, borderColor: colores.primario + '30' }]}
+          onPress={() => navigation.navigate('Devocionales')}
+        >
+          <View style={[styles.iconoTarjetaRapida, { backgroundColor: '#6366F125' }]}>
+            <Ionicons name="sparkles" size={22} color="#6366F1" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.tituloTarjetaRapida}>Devocionales por temas e IA</Text>
+            <Text style={styles.subtituloTarjetaRapida} numberOfLines={1}>
+              Malos hábitos, fe, paz o devocionales aleatorios
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoTenue} />
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.tarjetaRapida} onPress={() => setModalOracionVisible(true)}>
           <View style={[styles.iconoTarjetaRapida, { backgroundColor: colores.primario + '22' }]}>
             <Ionicons name="hand-left-outline" size={22} color={colores.primario} />
@@ -351,7 +413,7 @@ export default function InicioScreen({ navigation }) {
           <View style={{ flex: 1 }}>
             <Text style={styles.tituloTarjetaRapida}>Seguir leyendo</Text>
             <Text style={styles.subtituloTarjetaRapida} numberOfLines={1}>
-              {lecturaBiblia ? `${lecturaBiblia.nombreLibro} ${lecturaBiblia.capitulo}` : 'Juan 1'}
+              {lecturaBiblia ? `${lecturaBiblia.nombreLibro} ${lecturaBiblia.capitulo}` : 'Génesis 1'}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colores.textoTenue} />
@@ -420,6 +482,7 @@ export default function InicioScreen({ navigation }) {
         </TouchableOpacity>
       </Modal>
     </ScrollView>
+  </SafeAreaView>
   );
 }
 
@@ -427,13 +490,52 @@ function crearEstilos(colores) {
   return StyleSheet.create({
     contenedor: { flex: 1, backgroundColor: colores.fondo },
     centrado: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    saludo: { fontSize: 24, fontWeight: '600', color: colores.texto },
-    fecha: { fontSize: 14, color: colores.textoSecundario, marginTop: 2, textTransform: 'capitalize' },
+    encabezado: {
+      paddingTop: 8,
+      marginBottom: 2,
+    },
+    filaSaludo: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    saludo: {
+      fontSize: 26,
+      fontWeight: '700',
+      color: colores.texto,
+      letterSpacing: -0.3,
+    },
+    fecha: {
+      fontSize: 14,
+      color: colores.textoSecundario,
+      marginTop: 4,
+      textTransform: 'capitalize',
+      fontWeight: '500',
+    },
+    contenedorBarra: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 14,
+      marginBottom: 6,
+    },
+    barraAcento: {
+      width: 48,
+      height: 3.5,
+      backgroundColor: colores.primario,
+      borderRadius: 2,
+    },
+    lineaSeparadora: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colores.borde,
+      marginLeft: 10,
+      opacity: 0.8,
+    },
     frase: {
       fontSize: 14,
       fontStyle: 'italic',
       color: colores.textoSecundario,
-      marginTop: 14,
+      marginTop: 8,
       lineHeight: 20,
     },
     filaEstadisticas: { flexDirection: 'row', gap: 10, marginTop: 20 },

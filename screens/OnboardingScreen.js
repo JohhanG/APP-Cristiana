@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { elegirYSubirImagen } from '../lib/subirImagen';
 import { useTheme } from '../theme/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SLIDES = [
   {
@@ -98,6 +99,7 @@ export default function OnboardingScreen({ onListo }) {
       return;
     }
 
+    AsyncStorage.setItem('onboarding_completado_' + user.id, 'true').catch(() => {});
     onListo();
   }
 
@@ -106,6 +108,7 @@ export default function OnboardingScreen({ onListo }) {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from('perfiles').update({ onboarding_completado: true }).eq('id', user.id);
+      AsyncStorage.setItem('onboarding_completado_' + user.id, 'true').catch(() => {});
     }
     setGuardando(false);
     onListo();
