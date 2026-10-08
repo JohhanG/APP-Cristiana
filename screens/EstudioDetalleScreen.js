@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +24,7 @@ import {
   ESTUDIOS_SEMILLA,
   DURACIONES_ESTUDIO,
 } from '../lib/estudiosService.js';
+import { PIE_DESCARGA } from '../constants/enlacesApp.js';
 
 export default function EstudioDetalleScreen({ route, navigation }) {
   const { colores } = useTheme();
@@ -140,6 +142,21 @@ export default function EstudioDetalleScreen({ route, navigation }) {
     setCambiandoFavorito(false);
   }
 
+  async function compartirEstudioActual() {
+    if (!estudio) return;
+    try {
+      const titulo = estudio.titulo || 'Estudio Bíblico';
+      const cantDias = estudio.num_dias || dias.length || 7;
+      const tema = estudio.tema ? ` · ${estudio.tema}` : '';
+      const desc = estudio.descripcion ? `"${estudio.descripcion}"\n\n` : '';
+      const mensaje = `🕊️ ¡Hola! Te recomiendo este hermoso estudio bíblico: "${titulo}" (${cantDias} días${tema}).\n\n${desc}¡Ha sido de gran bendición y te animo a realizarlo! 🙏✨${PIE_DESCARGA}`;
+      await Share.share({
+        title: `Estudio Bíblico: ${titulo}`,
+        message: mensaje,
+      });
+    } catch (_) {}
+  }
+
   async function manejarSuscripcion() {
     if (!usuarioId) {
       Alert.alert('Inicia sesión', 'Necesitas iniciar sesión para seguir este estudio bíblico.');
@@ -250,19 +267,33 @@ export default function EstudioDetalleScreen({ route, navigation }) {
             </Text>
           </View>
 
-          {usuarioId && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <TouchableOpacity
               style={styles.botonFavorito}
-              onPress={alternarFavorito}
-              disabled={cambiandoFavorito}
+              onPress={compartirEstudioActual}
+              activeOpacity={0.7}
             >
               <Ionicons
-                name={esFavorito ? 'heart' : 'heart-outline'}
-                size={26}
-                color={esFavorito ? colores.peligro : colores.textoSecundario}
+                name="share-social-outline"
+                size={24}
+                color={colores.primario}
               />
             </TouchableOpacity>
-          )}
+
+            {usuarioId && (
+              <TouchableOpacity
+                style={styles.botonFavorito}
+                onPress={alternarFavorito}
+                disabled={cambiandoFavorito}
+              >
+                <Ionicons
+                  name={esFavorito ? 'heart' : 'heart-outline'}
+                  size={26}
+                  color={esFavorito ? colores.peligro : colores.textoSecundario}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         {/* Banner de Suscripción si NO está suscrito */}

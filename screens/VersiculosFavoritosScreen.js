@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { cargarVersiculosFavoritos, COLORES_RESALTADO } from '../lib/versiculosInteracciones';
 import { useTheme } from '../theme/ThemeContext';
+import { PIE_DESCARGA } from '../constants/enlacesApp';
 
 export default function VersiculosFavoritosScreen({ navigation }) {
   const { colores } = useTheme();
@@ -42,7 +43,7 @@ export default function VersiculosFavoritosScreen({ navigation }) {
   async function compartir(item) {
     try {
       await Share.share({
-        message: `"${item.texto}"\n${item.referencia} (${item.version})`,
+        message: `"${item.texto}"\n— ${item.referencia} (${item.version})${PIE_DESCARGA}`,
       });
     } catch (e) {
       // el usuario canceló, no pasa nada

@@ -22,6 +22,7 @@ import {
   guardarInteraccionVersiculo,
 } from '../lib/versiculosInteracciones';
 import { useTheme } from '../theme/ThemeContext';
+import { PIE_DESCARGA } from '../constants/enlacesApp';
  
 const CLAVE_ULTIMA_LECTURA = 'bibliaUltimaLectura';
  
@@ -127,7 +128,7 @@ export default function BibliaScreen({ navigation }) {
     if (!versiculoSeleccionado) return;
     try {
       await Share.share({
-        message: `"${versiculoSeleccionado.texto}" — ${referenciaDe(versiculoSeleccionado)} (${version})`,
+        message: `"${versiculoSeleccionado.texto}"\n— ${referenciaDe(versiculoSeleccionado)} (${version})${PIE_DESCARGA}`,
       });
     } catch (error) {
       // el usuario canceló el diálogo de compartir, no hay nada que hacer

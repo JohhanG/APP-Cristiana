@@ -416,9 +416,9 @@ export default function InicioScreen({ navigation }) {
             <Ionicons name="sparkles" size={22} color="#6366F1" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.tituloTarjetaRapida}>Devocionales por temas e IA</Text>
+            <Text style={styles.tituloTarjetaRapida}>Devocionales según tu situación</Text>
             <Text style={styles.subtituloTarjetaRapida} numberOfLines={1}>
-              Malos hábitos, fe, paz o devocionales aleatorios
+              Paz, familia, decisiones o según tu necesidad
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colores.textoTenue} />

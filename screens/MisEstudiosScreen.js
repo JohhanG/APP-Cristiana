@@ -21,6 +21,7 @@ import {
   desuscribirseDeEstudio,
   ESTUDIOS_SEMILLA,
 } from '../lib/estudiosService';
+import { PIE_DESCARGA } from '../constants/enlacesApp';
 
 const ETIQUETAS_ESTADO = {
   borrador: { texto: 'Borrador', icono: 'document-outline' },
@@ -103,9 +104,9 @@ export default function MisEstudiosScreen({ route, navigation }) {
 
       let mensaje = '';
       if (esCreador) {
-        mensaje = `📖 ¡Hola! Quiero compartirte un estudio bíblico que preparé: "${titulo}" (${dias}${tema}).\n\n"${estudio?.descripcion || 'Un tiempo especial para profundizar en la Palabra de Dios y fortalecer tu fe.'}"\n\n¡Espero de corazón que edifique mucho tu vida y la de tu familia! 🙏✨`;
+        mensaje = `📖 ¡Hola! Quiero compartirte un estudio bíblico que preparé: "${titulo}" (${dias}${tema}).\n\n"${estudio?.descripcion || 'Un tiempo especial para profundizar en la Palabra de Dios y fortalecer tu fe.'}"\n\n¡Espero de corazón que edifique mucho tu vida y la de tu familia! 🙏✨${PIE_DESCARGA}`;
       } else {
-        mensaje = `🕊️ ¡Hola! Te recomiendo este hermoso estudio bíblico que estoy realizando: "${titulo}" (${dias}${tema}).\n\n"${estudio?.descripcion || 'Un plan devocional para meditar en la Palabra y encontrar paz en Dios.'}"\n\n¡Ha sido de gran bendición para mí y te animo a llevarlo también! Puedes hacerlo desde la app. 🙏✨`;
+        mensaje = `🕊️ ¡Hola! Te recomiendo este hermoso estudio bíblico que estoy realizando: "${titulo}" (${dias}${tema}).\n\n"${estudio?.descripcion || 'Un plan devocional para meditar en la Palabra y encontrar paz en Dios.'}"\n\n¡Ha sido de gran bendición para mí y te animo a llevarlo también! 🙏✨${PIE_DESCARGA}`;
       }
 
       await Share.share({

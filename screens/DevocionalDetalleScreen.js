@@ -18,6 +18,7 @@ import {
   normalizarDevocional,
   TEMAS_DEVOCIONALES,
 } from '../lib/devocionalesService.js';
+import { PIE_DESCARGA } from '../constants/enlacesApp.js';
 
 export default function DevocionalDetalleScreen({ route, navigation }) {
   const { colores } = useTheme();
@@ -99,7 +100,9 @@ export default function DevocionalDetalleScreen({ route, navigation }) {
   async function compartirDevocional() {
     if (!devocional) return;
     try {
-      const mensaje = `✨ ${devocional.titulo}\n📖 ${devocional.referencia_biblica}\n\n"${textoBiblico || ''}"\n\n🎙️ REFLEXIÓN:\n${devocional.predicacion || devocional.reflexion}\n\n🙏 ORACIÓN ESPECIAL:\n${devocional.oracion || ''}\n\nCompartido desde Mi App Cristiana`;
+      const oracionTexto = devocional.oracion ? `\n\n🙏 ORACIÓN ESPECIAL:\n${devocional.oracion}` : '';
+      const pasoTexto = devocional.paso_practico ? `\n\n🌱 PASO DE FE:\n${devocional.paso_practico}` : '';
+      const mensaje = `✨ ${devocional.titulo}\n📖 ${devocional.referencia_biblica}\n\n"${textoBiblico || ''}"\n\n🎙️ REFLEXIÓN:\n${devocional.predicacion || devocional.reflexion}${pasoTexto}${oracionTexto}${PIE_DESCARGA}`;
       await Share.share({
         message: mensaje.trim(),
         title: devocional.titulo,
