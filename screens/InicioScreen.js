@@ -16,6 +16,8 @@ import { useTheme } from '../theme/ThemeContext';
 import { buscarVersiculo, LIBROS_BIBLIA } from '../lib/bibliaApi';
 import { BANCO_DEVOCIONALES_SEMILLA, normalizarDevocional } from '../lib/devocionalesService';
 import { obtenerEstudioActivo, obtenerSuscripcionesLocales } from '../lib/estudiosService';
+import ModalNovedades from '../components/ModalNovedades';
+import { VERSION_ACTUAL, haVistoUltimasNovedades } from '../constants/novedades';
 
 const FRASES = [
   'Un paso de fe hoy vale más que mil pasos de duda.',
@@ -103,11 +105,24 @@ export default function InicioScreen({ navigation }) {
   const [versiculoMemorizar, setVersiculoMemorizar] = useState(null);
   const [cargandoVersiculo, setCargandoVersiculo] = useState(false);
   const [versiculoRevelado, setVersiculoRevelado] = useState(false);
+  const [modalNovedadesVisible, setModalNovedadesVisible] = useState(false);
+  const [mostrarBannerNovedades, setMostrarBannerNovedades] = useState(false);
 
   const yaCargoUnaVez = useRef(false);
 
   const frase = FRASES[diaDelAnio() % FRASES.length];
   const oracionDeHoy = ORACIONES[diaDelAnio() % ORACIONES.length];
+
+  useEffect(() => {
+    async function revisarNovedades() {
+      const yaVistas = await haVistoUltimasNovedades();
+      if (!yaVistas) {
+        setModalNovedadesVisible(true);
+        setMostrarBannerNovedades(true);
+      }
+    }
+    revisarNovedades();
+  }, []);
 
   useEffect(() => {
     cargarTodo();
@@ -283,6 +298,37 @@ export default function InicioScreen({ navigation }) {
             <View style={styles.lineaSeparadora} />
           </View>
         </View>
+
+        {/* Banner de Novedades de la Versión */}
+        {mostrarBannerNovedades && (
+          <TouchableOpacity
+            style={styles.bannerNovedades}
+            activeOpacity={0.88}
+            onPress={() => setModalNovedadesVisible(true)}
+          >
+            <View style={styles.bannerNovedadesIcono}>
+              <Ionicons name="sparkles" size={18} color="#6366F1" />
+            </View>
+            <View style={{ flex: 1, paddingRight: 6 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <Text style={styles.bannerNovedadesTitulo}>¡Novedades en la app!</Text>
+                <View style={styles.bannerNovedadesBadge}>
+                  <Text style={styles.bannerNovedadesBadgeTexto}>v{VERSION_ACTUAL}</Text>
+                </View>
+              </View>
+              <Text style={styles.bannerNovedadesSubtitulo}>
+                Toca aquí para descubrir las nuevas mejoras y funciones.
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setMostrarBannerNovedades(false)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={styles.bannerNovedadesBotonCerrar}
+            >
+              <Ionicons name="close" size={16} color={colores.textoTenue} />
+            </TouchableOpacity>
+          </TouchableOpacity>
+        )}
 
         <Text style={styles.frase}>“{frase}”</Text>
 
@@ -481,6 +527,22 @@ export default function InicioScreen({ navigation }) {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Modal Novedades de la Versión */}
+      <ModalNovedades
+        visible={modalNovedadesVisible}
+        onCerrar={() => setModalNovedadesVisible(false)}
+        onExplorar={(featureId) => {
+          setModalNovedadesVisible(false);
+          if (featureId === 'situacion') {
+            navigation.navigate('Devocionales');
+          } else if (featureId === 'estudios') {
+            navigation.navigate('Estudios');
+          } else if (featureId === 'biblia_genesis') {
+            navigation.navigate('Biblia');
+          }
+        }}
+      />
     </ScrollView>
   </SafeAreaView>
   );
@@ -610,5 +672,56 @@ function crearEstilos(colores) {
       alignItems: 'center',
     },
     textoBotonCerrarModal: { color: colores.primarioTexto, fontWeight: '700' },
+    bannerNovedades: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colores.superficie,
+      borderRadius: 14,
+      padding: 12,
+      marginHorizontal: 20,
+      marginTop: 4,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colores.primario + '40',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 5,
+      elevation: 2,
+      gap: 12,
+    },
+    bannerNovedadesIcono: {
+      width: 38,
+      height: 38,
+      borderRadius: 19,
+      backgroundColor: '#6366F118',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    bannerNovedadesTitulo: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: colores.texto,
+    },
+    bannerNovedadesBadge: {
+      backgroundColor: colores.primario + '18',
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 6,
+    },
+    bannerNovedadesBadgeTexto: {
+      fontSize: 10,
+      fontWeight: '800',
+      color: colores.primario,
+    },
+    bannerNovedadesSubtitulo: {
+      fontSize: 12,
+      color: colores.textoSecundario,
+      lineHeight: 16,
+      marginTop: 2,
+    },
+    bannerNovedadesBotonCerrar: {
+      padding: 4,
+    },
   });
 }

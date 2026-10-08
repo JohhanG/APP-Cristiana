@@ -397,7 +397,7 @@ export default function AdminScreen({ navigation }) {
                 <Ionicons name="sparkles" size={18} color="#6366F1" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.tituloBotonGenerarIa}>Generar estudio con IA</Text>
+                <Text style={styles.tituloBotonGenerarIa}>Crear nuevo plan de estudio</Text>
                 <Text style={styles.subtituloBotonGenerarIa}>
                   Crea planes de 7, 15 o 30 días sobre cualquier pasaje bíblico
                 </Text>
@@ -665,7 +665,7 @@ export default function AdminScreen({ navigation }) {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Ionicons name="sparkles" size={20} color="#6366F1" />
-                <Text style={styles.tituloModal}>Generar estudio con IA</Text>
+                <Text style={styles.tituloModal}>Crear nuevo plan de estudio</Text>
               </View>
               {!generandoIaEstudio && (
                 <TouchableOpacity onPress={() => setModalIaEstudioVisible(false)}>

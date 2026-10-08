@@ -25,6 +25,8 @@ import {
 } from '../lib/notificaciones';
 import { eliminarMiCuenta } from '../lib/cuenta';
 import { elegirYSubirImagen } from '../lib/subirImagen';
+import ModalNovedades from '../components/ModalNovedades';
+import { VERSION_ACTUAL } from '../constants/novedades';
 
 const HORARIOS_DISPONIBLES = [];
 for (let h = 5; h <= 22; h++) {
@@ -60,6 +62,7 @@ export default function PerfilScreen({ navigation }) {
   const [eliminandoCuenta, setEliminandoCuenta] = useState(false);
   const [fotoUrl, setFotoUrl] = useState(null);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [modalNovedadesVisible, setModalNovedadesVisible] = useState(false);
 
   async function cambiarFotoPerfil() {
     setSubiendoFoto(true);
@@ -473,6 +476,19 @@ export default function PerfilScreen({ navigation }) {
           </View>
           <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
         </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => setModalNovedadesVisible(true)}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="sparkles-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Novedades de la versión (v{VERSION_ACTUAL})</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
       </View>
 
       {esAdmin && (
@@ -570,6 +586,21 @@ export default function PerfilScreen({ navigation }) {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      <ModalNovedades
+        visible={modalNovedadesVisible}
+        onCerrar={() => setModalNovedadesVisible(false)}
+        onExplorar={(featureId) => {
+          setModalNovedadesVisible(false);
+          if (featureId === 'situacion') {
+            navigation.navigate('Devocionales');
+          } else if (featureId === 'estudios') {
+            navigation.navigate('Estudios');
+          } else if (featureId === 'biblia_genesis') {
+            navigation.navigate('Biblia');
+          }
+        }}
+      />
 
     </ScrollView>
   </SafeAreaView>

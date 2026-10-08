@@ -177,20 +177,20 @@ export default function DevocionalesScreen({ navigation }) {
           <Ionicons name="chevron-forward" size={20} color={colores.primario} />
         </TouchableOpacity>
 
-        {/* Tarjeta de Generación Inteligente (IA) */}
+        {/* Tarjeta de Devocionales según tu situación */}
         <TouchableOpacity style={styles.tarjetaIaBanner} onPress={abrirModalIA}>
           <View style={styles.filaIa}>
             <View style={styles.iconoIa}>
               <Ionicons name="sparkles" size={20} color="#6366F1" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.tituloIa}>Crear devocional guiado con IA</Text>
+              <Text style={styles.tituloIa}>Devocionales según tu situación</Text>
               <Text style={styles.subtituloIa}>
-                ¿Luchando con un mal hábito o desánimo? Recibe una palabra bíblica a tu medida.
+                ¿Luchando con una decisión, afán o desánimo? Recibe una palabra de Dios para tu momento.
               </Text>
             </View>
             <View style={styles.chipBotonIa}>
-              <Text style={styles.textoChipIa}>Crear</Text>
+              <Text style={styles.textoChipIa}>Comenzar</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -297,7 +297,7 @@ export default function DevocionalesScreen({ navigation }) {
             <View style={styles.filaModalHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Ionicons name="sparkles" size={20} color="#6366F1" />
-                <Text style={styles.tituloModal}>Crear devocional personalizado</Text>
+                <Text style={styles.tituloModal}>Palabra según tu momento</Text>
               </View>
               {!generandoIa && (
                 <TouchableOpacity onPress={() => setModalIaVisible(false)}>
@@ -370,11 +370,11 @@ export default function DevocionalesScreen({ navigation }) {
               </View>
 
               <Text style={[styles.etiquetaModalInput, { marginTop: 14 }]}>
-                3. Escribe tu situación o lo que estás batallando:
+                3. O cuéntanos qué estás viviendo hoy (Opcional):
               </Text>
               <TextInput
                 style={styles.inputSituacion}
-                placeholder="Ej. Me siento abrumado con el trabajo, tengo ansiedad en las noches..."
+                placeholder="Ej. Siento incertidumbre por el trabajo, tengo ansiedad en las noches o necesito paz..."
                 placeholderTextColor={colores.textoTenue}
                 value={situacionPersonal}
                 onChangeText={setSituacionPersonal}
@@ -383,7 +383,7 @@ export default function DevocionalesScreen({ navigation }) {
                 editable={!generandoIa}
               />
 
-              {/* Ajuste opcional de clave de Gemini */}
+              {/* Ajuste opcional de conexión */}
               <TouchableOpacity
                 style={styles.botonDesplegarClave}
                 onPress={() => setMostrarConfigApiKey(!mostrarConfigApiKey)}
@@ -391,7 +391,7 @@ export default function DevocionalesScreen({ navigation }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Ionicons name="key-outline" size={14} color={colores.primario} />
                   <Text style={styles.textoDesplegarClave}>
-                    {mostrarConfigApiKey ? 'Ocultar ajuste de clave Gemini' : '¿Tienes clave gratuita de Gemini AI? (Opcional)'}
+                    {mostrarConfigApiKey ? 'Ocultar ajuste avanzado' : '¿Ajuste de conexión adicional? (Opcional)'}
                   </Text>
                 </View>
                 <Ionicons
@@ -404,11 +404,11 @@ export default function DevocionalesScreen({ navigation }) {
               {mostrarConfigApiKey && (
                 <View style={styles.cajaClaveApiKey}>
                   <Text style={styles.textoAyudaClave}>
-                    Si deseas conectar tu clave de Google AI Studio (gratis), pégala aquí. Si la dejas en blanco, nuestro motor pastoral generará tu prédica personalizada de forma inmediata.
+                    Si cuentas con una clave personal de conexión, puedes ingresarla aquí. Si la dejas vacía, la app generará tu reflexión bíblica inmediatamente con nuestro catálogo pastoral.
                   </Text>
                   <TextInput
                     style={styles.inputApiKey}
-                    placeholder="Pega tu clave AIzaSy... aquí"
+                    placeholder="Pega tu clave aquí (opcional)"
                     placeholderTextColor={colores.textoTenue}
                     value={apiKeyInput}
                     onChangeText={setApiKeyInput}
@@ -436,8 +436,8 @@ export default function DevocionalesScreen({ navigation }) {
                   <ActivityIndicator color="#ffffff" />
                 ) : (
                   <>
-                    <Ionicons name="flash" size={16} color="#ffffff" style={{ marginRight: 6 }} />
-                    <Text style={styles.textoBotonGenerar}>Generar reflexión</Text>
+                    <Ionicons name="sparkles" size={16} color="#ffffff" style={{ marginRight: 6 }} />
+                    <Text style={styles.textoBotonGenerar}>Buscar palabra para hoy</Text>
                   </>
                 )}
               </TouchableOpacity>
