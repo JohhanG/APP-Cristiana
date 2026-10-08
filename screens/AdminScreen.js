@@ -679,6 +679,41 @@ export default function AdminScreen({ navigation }) {
                 Crea un plan devocional completo de varios días con reflexiones y preguntas basadas en la Biblia.
               </Text>
 
+              {/* Sugerencias Rápidas de Estudio */}
+              <Text style={[styles.etiquetaCampo, { marginTop: 8, marginBottom: 6 }]}>Sugerencias temáticas:</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                {[
+                  { libro: 'Santiago', tema: 'Fe Práctica en el Mundo Real', dias: 7 },
+                  { libro: 'Pedro (Evangelios y Hechos)', tema: 'Del Fracaso a la Roca de Fe', dias: 7 },
+                  { libro: 'Filipenses 4 y Salmos', tema: 'Paz Sobrenatural y Vencer la Ansiedad', dias: 7 },
+                  { libro: 'David (1 Samuel y Salmos)', tema: 'Un Corazón que Busca a Dios', dias: 7 },
+                  { libro: 'Filipenses', tema: 'Gozo Inquebrantable en las Pruebas', dias: 15 },
+                  { libro: 'Proverbios', tema: 'Sabiduría para tus Decisiones', dias: 30 },
+                ].map((sug, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    style={{
+                      backgroundColor: colores.superficieAlterna,
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                      marginRight: 8,
+                      borderWidth: 1,
+                      borderColor: colores.borde,
+                    }}
+                    onPress={() => {
+                      setIaLibro(sug.libro);
+                      setIaTema(sug.tema);
+                      setIaNumDias(sug.dias);
+                    }}
+                  >
+                    <Text style={{ fontSize: 11.5, color: colores.texto, fontWeight: '600' }}>
+                      {sug.libro} ({sug.dias}d)
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
               <Text style={styles.etiquetaCampo}>Libro o Pasaje bíblico:</Text>
               <TextInput
                 style={styles.inputSimple}

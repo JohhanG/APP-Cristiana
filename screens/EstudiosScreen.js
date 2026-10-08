@@ -36,9 +36,10 @@ export default function EstudiosScreen({ navigation }) {
 
   const FILTROS = [
     { id: 'todos', etiqueta: 'Todos' },
+    { id: 'libros', etiqueta: '📖 Libros Bíblicos' },
+    { id: 'discipulos', etiqueta: '🕊️ Discípulos y Vidas' },
+    { id: 'paz', etiqueta: '🌿 Paz y Calma' },
     { id: 'suscritos', etiqueta: 'Mis suscripciones' },
-    { id: 'semanales', etiqueta: 'Semanales (7d)' },
-    { id: 'mensuales', etiqueta: 'Mensuales (30d)' },
     { id: 'favoritos', etiqueta: 'Favoritos' },
   ];
 
@@ -144,8 +145,45 @@ export default function EstudiosScreen({ navigation }) {
     // Filtros de categoría / estado
     if (filtroActivo === 'favoritos' && !favoritosIds.has(item.id)) return false;
     if (filtroActivo === 'suscritos' && !suscripcionesMap[item.id]) return false;
-    if (filtroActivo === 'semanales' && item.num_dias !== 7) return false;
-    if (filtroActivo === 'mensuales' && item.num_dias !== 30) return false;
+
+    if (filtroActivo === 'libros') {
+      const texto = `${item.tema || ''} ${item.titulo || ''}`.toLowerCase();
+      const esLibro =
+        texto.includes('libro') ||
+        texto.includes('mateo') ||
+        texto.includes('filipenses') ||
+        texto.includes('proverbios') ||
+        texto.includes('santiago') ||
+        texto.includes('sermón') ||
+        texto.includes('sermon') ||
+        texto.includes('efesios') ||
+        texto.includes('romanos');
+      if (!esLibro) return false;
+    }
+
+    if (filtroActivo === 'discipulos') {
+      const texto = `${item.tema || ''} ${item.titulo || ''} ${item.descripcion || ''}`.toLowerCase();
+      const esDiscipulo =
+        texto.includes('discípulo') ||
+        texto.includes('discipulo') ||
+        texto.includes('pedro') ||
+        texto.includes('david') ||
+        texto.includes('pablo') ||
+        texto.includes('personaje');
+      if (!esDiscipulo) return false;
+    }
+
+    if (filtroActivo === 'paz') {
+      const texto = `${item.tema || ''} ${item.titulo || ''} ${item.descripcion || ''}`.toLowerCase();
+      const esPaz =
+        texto.includes('paz') ||
+        texto.includes('ansiedad') ||
+        texto.includes('calma') ||
+        texto.includes('afán') ||
+        texto.includes('afan') ||
+        texto.includes('descanso');
+      if (!esPaz) return false;
+    }
 
     // Filtro de búsqueda por texto
     if (busqueda.trim()) {
