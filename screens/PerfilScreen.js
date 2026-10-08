@@ -420,7 +420,10 @@ export default function PerfilScreen({ navigation }) {
         >
           <View style={styles.filaIconoTexto}>
             <Ionicons name="book-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
-            <Text style={styles.textoAjuste}>Mis estudios</Text>
+            <View>
+              <Text style={styles.textoAjuste}>Mis estudios</Text>
+              <Text style={styles.subtextoAjuste}>Suscritos e historial · Creados por ti</Text>
+            </View>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
         </TouchableOpacity>
