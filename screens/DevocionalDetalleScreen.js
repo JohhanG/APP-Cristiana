@@ -166,7 +166,14 @@ export default function DevocionalDetalleScreen({ route, navigation }) {
           <Ionicons name="sparkles-outline" size={18} color={colores.primario} />
           <Text style={styles.tituloSeccion}>Reflexión</Text>
         </View>
-        <Text style={styles.textoPredicacion}>{textoPredicacion}</Text>
+        {(textoPredicacion || '')
+          .split('\n\n')
+          .filter((p) => p.trim().length > 0)
+          .map((parrafo, idx) => (
+            <Text key={idx} style={styles.parrafoPredicacion}>
+              {parrafo.trim()}
+            </Text>
+          ))}
       </View>
 
       {/* 3. Sección: Aplicación para hoy */}
@@ -203,7 +210,14 @@ export default function DevocionalDetalleScreen({ route, navigation }) {
             <Ionicons name="hand-left-outline" size={18} color={colores.primario} />
             <Text style={styles.tituloOracion}>Oración especial</Text>
           </View>
-          <Text style={styles.textoOracion}>“{devocional.oracion}”</Text>
+          {devocional.oracion
+            .split('\n\n')
+            .filter((p) => p.trim().length > 0)
+            .map((parrafo, idx) => (
+              <Text key={idx} style={styles.parrafoOracion}>
+                {parrafo.trim()}
+              </Text>
+            ))}
         </View>
       ) : null}
 
@@ -356,6 +370,19 @@ function crearEstilos(colores) {
       fontSize: 15,
       lineHeight: 25,
       color: colores.texto,
+    },
+    parrafoPredicacion: {
+      fontSize: 16,
+      lineHeight: 26,
+      color: colores.texto,
+      marginBottom: 14,
+    },
+    parrafoOracion: {
+      fontSize: 15,
+      lineHeight: 24,
+      color: colores.texto,
+      fontStyle: 'italic',
+      marginBottom: 10,
     },
 
     tarjetaPasoPractico: {

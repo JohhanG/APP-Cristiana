@@ -178,7 +178,13 @@ export default function InicioScreen({ navigation }) {
           .maybeSingle();
 
         if (devocionalDb) {
-          setDevocional(normalizarDevocional(devocionalDb));
+          const devNorm = normalizarDevocional(devocionalDb);
+          const parrafosNorm = (devNorm?.predicacion || '').split('\n\n').filter((p) => p.trim() !== '').length;
+          if (parrafosNorm >= 12) {
+            setDevocional(devNorm);
+          } else {
+            setDevocional(devocionalSemillaHoy);
+          }
         }
       }
 
@@ -380,7 +386,7 @@ export default function InicioScreen({ navigation }) {
             </View>
           </View>
           <Text style={styles.referencia}>{devocional.referencia_biblica}</Text>
-          <Text style={styles.reflexion} numberOfLines={4}>{devocional.reflexion}</Text>
+          <Text style={styles.reflexion} numberOfLines={4}>{devocional.predicacion || devocional.reflexion}</Text>
 
           <TouchableOpacity
             style={[styles.botonLeido, yaLeidoHoy && styles.botonLeidoCompletado]}

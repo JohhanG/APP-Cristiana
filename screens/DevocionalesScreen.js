@@ -271,7 +271,7 @@ export default function DevocionalesScreen({ navigation }) {
 
                   <Text style={styles.tituloItem}>{item.titulo}</Text>
                   <Text style={styles.resumenItem} numberOfLines={2}>
-                    {item.reflexion}
+                    {item.predicacion || item.reflexion}
                   </Text>
 
                   <View style={styles.filaItemPie}>
