@@ -239,7 +239,7 @@ export default function EstudioDetalleScreen({ route, navigation }) {
   }
 
   const rawDia = dias[diaActual];
-  const dia = normalizarDiaEstudio(rawDia);
+  const dia = normalizarDiaEstudio(rawDia, estudio);
   const duracionInfo = DURACIONES_ESTUDIO.find((d) => d.id === (estudio?.num_dias || dias.length));
 
   return (
@@ -406,13 +406,42 @@ export default function EstudioDetalleScreen({ route, navigation }) {
               <Text style={styles.textoBiblico}>“{dia.texto_biblico}”</Text>
             ) : null}
 
-            {/* 1. Reflexión del Día */}
+            {/* Contexto histórico y autor */}
+            {dia.autor_contexto ? (
+              <View style={styles.cajaContextoAutor}>
+                <View style={styles.filaTituloBloque}>
+                  <Ionicons name="person-circle-outline" size={17} color="#2563EB" />
+                  <Text style={[styles.tituloBloque, { color: '#2563EB' }]}>Autor y Contexto Histórico</Text>
+                </View>
+                <Text style={styles.textoContextoAutor}>{dia.autor_contexto}</Text>
+              </View>
+            ) : null}
+
+            {/* Versículos clave y referencias cruzadas */}
+            {dia.versiculos_clave ? (
+              <View style={styles.cajaVersiculosClave}>
+                <View style={styles.filaTituloBloque}>
+                  <Ionicons name="git-network-outline" size={16} color="#7C3AED" />
+                  <Text style={[styles.tituloBloque, { color: '#7C3AED' }]}>Profundiza en las Escrituras (Referencias Cruzadas)</Text>
+                </View>
+                <Text style={styles.textoVersiculosClave}>{dia.versiculos_clave}</Text>
+              </View>
+            ) : null}
+
+            {/* 1. Reflexión y Estudio Exegético del Día */}
             <View style={styles.bloquePredicacion}>
               <View style={styles.filaTituloBloque}>
                 <Ionicons name="sparkles-outline" size={16} color={colores.primario} />
-                <Text style={styles.tituloBloque}>Reflexión del día</Text>
+                <Text style={styles.tituloBloque}>Estudio Bíblico y Reflexión Profunda</Text>
               </View>
-              <Text style={styles.predicacionTexto}>{dia.predicacion || dia.reflexion}</Text>
+              {(dia.predicacion || dia.reflexion || '')
+                .split('\n\n')
+                .filter((p) => p.trim() !== '')
+                .map((parrafo, idx) => (
+                  <Text key={idx} style={styles.predicacionTexto}>
+                    {parrafo.trim()}
+                  </Text>
+                ))}
             </View>
 
             {/* 2. Aplicación para hoy */}
@@ -420,7 +449,7 @@ export default function EstudioDetalleScreen({ route, navigation }) {
               <View style={styles.bloqueAplicacion}>
                 <View style={styles.filaTituloBloque}>
                   <Ionicons name="footsteps" size={16} color="#059669" />
-                  <Text style={[styles.tituloBloque, { color: '#059669' }]}>Aplicación para hoy</Text>
+                  <Text style={[styles.tituloBloque, { color: '#059669' }]}>Aplicación Práctica para Hoy</Text>
                 </View>
                 <Text style={styles.textoAplicacion}>{dia.aplicacion}</Text>
               </View>
@@ -431,20 +460,27 @@ export default function EstudioDetalleScreen({ route, navigation }) {
               <View style={styles.cajaPregunta}>
                 <View style={styles.filaTituloBloque}>
                   <Ionicons name="bulb-outline" size={16} color="#D97706" />
-                  <Text style={[styles.tituloBloque, { color: '#D97706' }]}>Para meditar</Text>
+                  <Text style={[styles.tituloBloque, { color: '#D97706' }]}>Pregunta de Autoexamen</Text>
                 </View>
                 <Text style={styles.pregunta}>{dia.pregunta_reflexion}</Text>
               </View>
             ) : null}
 
-            {/* 4. Oración especial */}
+            {/* 4. Oración guiada */}
             {dia.oracion ? (
               <View style={styles.cajaOracion}>
                 <View style={styles.filaTituloBloque}>
                   <Ionicons name="hand-left-outline" size={16} color={colores.primario} />
-                  <Text style={styles.tituloBloque}>Oración especial</Text>
+                  <Text style={styles.tituloBloque}>Oración Guiada</Text>
                 </View>
-                <Text style={styles.textoOracion}>“{dia.oracion}”</Text>
+                {(dia.oracion || '')
+                  .split('\n\n')
+                  .filter((p) => p.trim() !== '')
+                  .map((parrafo, idx) => (
+                    <Text key={idx} style={styles.textoOracion}>
+                      “{parrafo.trim().replace(/^“|”$/g, '')}”
+                    </Text>
+                  ))}
               </View>
             ) : null}
           </View>
@@ -635,6 +671,35 @@ function crearEstilos(colores) {
       borderLeftColor: colores.primario,
     },
 
+    cajaContextoAutor: {
+      backgroundColor: '#2563EB12',
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 14,
+      borderWidth: 1,
+      borderColor: '#2563EB30',
+    },
+    textoContextoAutor: {
+      fontSize: 13.5,
+      lineHeight: 21,
+      color: colores.texto,
+    },
+
+    cajaVersiculosClave: {
+      backgroundColor: '#7C3AED12',
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 14,
+      borderWidth: 1,
+      borderColor: '#7C3AED30',
+    },
+    textoVersiculosClave: {
+      fontSize: 13,
+      lineHeight: 20,
+      fontWeight: '600',
+      color: '#7C3AED',
+    },
+
     bloquePredicacion: {
       marginBottom: 16,
     },
@@ -652,9 +717,10 @@ function crearEstilos(colores) {
       letterSpacing: 0.6,
     },
     predicacionTexto: {
-      fontSize: 15,
-      lineHeight: 24,
+      fontSize: 15.5,
+      lineHeight: 25,
       color: colores.texto,
+      marginBottom: 14,
     },
 
     bloqueAplicacion: {
@@ -693,10 +759,11 @@ function crearEstilos(colores) {
       marginBottom: 8,
     },
     textoOracion: {
-      fontSize: 14,
+      fontSize: 14.5,
       fontStyle: 'italic',
       color: colores.texto,
-      lineHeight: 22,
+      lineHeight: 23,
+      marginBottom: 10,
     },
 
     navegacion: { marginTop: 22, gap: 10 },
