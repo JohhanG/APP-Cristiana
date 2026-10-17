@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maná — Alimento Espiritual para Cada Día | App Cristiana Oficial</title>
+  <meta name="description" content="Descarga gratis la app cristiana Maná. Devocionales profundos, lectura guiada de la Santa Biblia, estudios bíblicos temáticos y diario de oración para tu crecimiento espiritual.">
+  <meta name="keywords" content="Maná, app cristiana, devocionales cristianos, biblia reina valera 1960, estudios bíblicos, diario de oración, descargar apk">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Open Graph / Metaetiquetas para compartir en WhatsApp, Facebook y Telegram -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Maná — Alimento Espiritual para Cada Día">
+  <meta property="og:description" content="Descarga la app oficial Maná. Devocionales de 14 a 22 párrafos, estudios bíblicos, biblia multiversión y diario de oración. ¡100% gratuita!">
+  <meta property="og:image" content="icon.png">
+  <meta property="og:url" content="https://johhang.github.io/APP-Cristiana/">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mana: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#6366f1',
+              700: '#4f46e5',
+              800: '#3C3489',
+              900: '#231e54',
+              950: '#141233',
+            },
+            dorado: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Efectos de resplandor y fondos elegantes */
+    .glow-primary {
+      box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.35);
+    }
+    .glow-gold {
+      box-shadow: 0 0 35px -8px rgba(245, 158, 11, 0.45);
+    }
+    .glass-nav {
+      background: rgba(20, 18, 51, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gradient-hero {
+      background: radial-gradient(circle at 50% 20%, #3C3489 0%, #141233 70%, #0d0b21 100%);
+    }
+    .gradient-text-gold {
+      background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-[#0e0c24] text-slate-100 font-sans selection:bg-indigo-500 selection:text-white antialiased overflow-x-hidden">
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-indigo-900/40 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-mana-800 to-mana-600 p-0.5 shadow-lg group-hover:scale-105 transition-transform flex items-center justify-center">
+          <img src="icon.png" alt="Logo de Maná" class="w-full h-full object-cover rounded-2xl" onerror="this.onerror=null; this.src='favicon.png';">
+        </div>
+        <div class="flex flex-col">
+          <span class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-1">
+            Maná <span class="text-dorado-500 text-xs px-2 py-0.5 rounded-full bg-dorado-500/10 border border-dorado-500/30 font-semibold tracking-wide uppercase">App</span>
+          </span>
+          <span class="text-[11px] text-indigo-300 font-medium tracking-wide">Alimento Espiritual Diario</span>
+        </div>
+      </a>
+
+      <!-- Enlaces de navegación desktop -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#funciones" class="hover:text-white transition-colors">Funciones</a>
+        <a href="#devocionales" class="hover:text-white transition-colors">Devocionales</a>
+        <a href="#estudios" class="hover:text-white transition-colors">Estudios Bíblicos</a>
+        <a href="#biblia" class="hover:text-white transition-colors">Santa Biblia</a>
+        <a href="#instalar" class="hover:text-white transition-colors">Cómo Instalar</a>
+        <a href="#faq" class="hover:text-white transition-colors">Preguntas</a>
+      </nav>
+
+      <!-- Botón de Descarga Superior -->
+      <div class="flex items-center gap-3">
+        <a href="https://bit.ly/3TsopDl" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-dorado-500 to-amber-600 hover:from-dorado-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg glow-gold hover:scale-105 active:scale-95 transition-all">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          <span>Descargar APK</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative pt-36 pb-20 md:pt-44 md:pb-32 gradient-hero overflow-hidden">
+    <!-- Luces y halos de fondo decorativos -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-indigo-600/20 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/3 left-1/4 w-[350px] h-[350px] bg-dorado-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        <!-- Texto del Hero (7 columnas en desktop) -->
+        <div class="lg:col-span-7 text-center lg:text-left space-y-7">
+          
+          <!-- Badge superior -->
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-400/30 text-indigo-300 text-xs font-semibold tracking-wide">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Versión 1.0.0 Oficial Disponible para Android
+          </div>
+
+          <!-- Título Principal -->
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12]">
+            Tu tiempo a solas con Dios, <span class="gradient-text-gold">cada día más profundo</span>.
+          </h1>
+
+          <!-- Subtítulo -->
+          <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+            Una aplicación creada para quienes anhelan verdadero alimento espiritual. Devocionales pastorales extensos, estudios de libros bíblicos y discípulos, lectura de la Santa Biblia y un diario íntimo de oración.
+          </p>
+
+          <!-- Acciones Principales -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <a href="https://bit.ly/3TsopDl" target="_blank" rel="noopener noreferrer" 
+               class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-dorado-500 via-amber-500 to-dorado-600 hover:from-dorado-400 hover:to-amber-500 text-slate-950 font-extrabold text-base shadow-xl glow-gold hover:-translate-y-0.5 active:translate-y-0 transition-all">
+              <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+              <span>Descargar APK Gratis</span>
+            </a>
+
+            <a href="#funciones" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl glass-card hover:bg-white/10 text-white font-semibold text-base transition-all">
+              <span>Conocer las funciones</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </a>
+          </div>
+
+          <!-- Micro-garantías de seguridad -->
+          <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>100% Gratuita</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <span>Libre de virus y publicidad</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Actualizaciones silenciosas instantáneas</span>
+            </div>
+          </div>
+
+          <!-- Cita Bíblica Destacada -->
+          <div class="p-4 rounded-2xl bg-indigo-950/60 border border-indigo-900/60 text-left max-w-xl mx-auto lg:mx-0">
+            <p class="font-serif italic text-sm text-indigo-200 leading-relaxed">
+              «No solo de pan vivirá el hombre, sino de toda palabra que sale de la boca de Dios.»
+            </p>
+            <span class="block text-xs font-semibold text-dorado-400 mt-1">— Mateo 4:4</span>
+          </div>
+
+        </div>
+
+        <!-- Mockup Visual del Teléfono (5 columnas) -->
+        <div class="lg:col-span-5 flex justify-center relative">
+          <!-- Círculo brillante posterior -->
+          <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/30 to-amber-500/20 rounded-full blur-3xl -z-10 scale-90"></div>
+
+          <!-- Marco de Teléfono Estilizado -->
+          <div class="w-full max-w-[320px] sm:max-w-[340px] rounded-[42px] p-3.5 bg-gradient-to-b from-slate-700 via-slate-900 to-black shadow-2xl border border-slate-700/60">
+            <!-- Pantalla del celular -->
+            <div class="rounded-[34px] bg-[#141233] overflow-hidden border border-indigo-900/40 text-slate-100 flex flex-col h-[620px] shadow-inner select-none">
+              
+              <!-- Barra superior de estado -->
+              <div class="px-6 pt-3 pb-2 flex justify-between items-center text-[10px] text-slate-400 font-semibold border-b border-indigo-900/30 bg-[#12102e]">
+                <span>9:41 AM</span>
+                <div class="w-16 h-3.5 bg-black rounded-full mx-auto"></div>
+                <div class="flex items-center gap-1">
+                  <span>5G</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              <!-- Header del App -->
+              <div class="px-5 py-3.5 bg-gradient-to-b from-[#1b1747] to-[#141233] border-b border-indigo-900/40">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="text-xs text-indigo-300 font-medium">Hola, bienvenido</span>
+                    <h3 class="text-base font-bold text-white leading-tight">Maná Diario</h3>
+                  </div>
+                  <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-500/15 border border-dorado-500/40 text-dorado-400 text-xs font-bold">
+                    <span>🔥</span>
+                    <span>14 días</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contenido scrolleable simulado -->
+              <div class="p-4 space-y-3.5 overflow-hidden flex-1 text-xs">
+                
+                <!-- Tarjeta Devocional de Hoy -->
+                <div class="p-3.5 rounded-2xl bg-gradient-to-br from-mana-900 to-[#1d194c] border border-indigo-500/30 shadow-lg">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-bold text-dorado-400 uppercase tracking-wider">Devocional de hoy</span>
+                    <span class="text-[10px] text-indigo-300">Ver completo →</span>
+                  </div>
+                  <h4 class="text-sm font-bold text-white mb-1">Paz en Medio de la Tormenta</h4>
+                  <p class="text-[11px] text-indigo-200 line-clamp-3 leading-relaxed mb-2.5">
+                    «La paz os dejo, mi paz os doy; yo no os la doy como el mundo la da. No se turbe vuestro corazón...» — Juan 14:27
+                  </p>
+                  <div class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow">
+                    <span>✓</span>
+                    <span>Marcar como leído</span>
+                  </div>
+                </div>
+
+                <!-- Tarjeta Estudio en Progreso -->
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div class="space-y-0.5">
+                    <span class="text-[10px] text-indigo-300 font-medium">Continuar estudio</span>
+                    <h5 class="text-xs font-bold text-white">Epístola de Santiago</h5>
+                    <p class="text-[10px] text-slate-400">Día 4 de 7 • Fe en Acción</p>
+                  </div>
+                  <div class="w-8 h-8 rounded-full bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-300">
+                    →
+                  </div>
+                </div>
+
+                <!-- Accesos rápidos -->
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                  <div class="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                    <span class="text-base">✨</span>
+                    <div class="font-bold text-[11px] text-white leading-tight">Según tu situación</div>
+                    <div class="text-[9px] text-slate-400">Paz, ansiedad o duelo</div>
+                  </div>
+                  <div class="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                    <span class="text-base">🙏</span>
+                    <div class="font-bold text-[11px] text-white leading-tight">Diario de oración</div>
+                    <div class="text-[9px] text-slate-400">Peticiones y testimonios</div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Barra inferior simulada -->
+              <div class="px-6 py-2.5 bg-[#0f0e26] border-t border-indigo-900/40 flex justify-between items-center text-[10px] text-slate-400">
+                <div class="flex flex-col items-center text-dorado-400 font-bold">
+                  <span>🏠</span>
+                  <span>Inicio</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <span>📚</span>
+                  <span>Estudios</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <span>📖</span>
+                  <span>Biblia</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <span>👤</span>
+                  <span>Perfil</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CIFRAS / ESTADÍSTICAS RÁPIDAS -->
+  <section class="py-12 bg-[#09081a] border-y border-indigo-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div class="p-4 space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-dorado-400 font-serif">14 a 22</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Párrafos por devocional</div>
+        </div>
+        <div class="p-4 space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-white font-serif">+3</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Versiones Bíblicas (RV1960, NVI, NTV)</div>
+        </div>
+        <div class="p-4 space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-indigo-400 font-serif">100%</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Gratis y sin publicidad</div>
+        </div>
+        <div class="p-4 space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-serif">24/7</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Disponible sin conexión</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN DE FUNCIONES PRINCIPALES -->
+  <section id="funciones" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+      <span class="text-xs uppercase tracking-widest text-dorado-400 font-bold">Todo lo que necesitas para tu espíritu</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Diseñada con calidez pastoral y reverencia bíblica</h2>
+      <p class="text-slate-400 text-sm sm:text-base">Maná reúne las herramientas indispensables para cultivar un hábito devocional diario que transforma tu vida.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <!-- Card 1: Devocionales Profundos -->
+      <div id="devocionales" class="glass-card p-8 rounded-3xl space-y-4 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-2xl text-indigo-400 group-hover:scale-110 transition-transform">
+          📖
+        </div>
+        <h3 class="text-xl font-bold text-white">Devocionales Extensos y Sólidos</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Olvida los devocionales de 2 líneas. Cada reflexión incluye entre 14 y 22 párrafos con contexto histórico, enseñanza doctrinal, preguntas de autoexamen, pasos prácticos y una oración íntima.
+        </p>
+      </div>
+
+      <!-- Card 2: Devocionales según tu situación -->
+      <div class="glass-card p-8 rounded-3xl space-y-4 hover:border-dorado-500/50 hover:bg-white/[0.06] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-dorado-500/20 border border-dorado-500/40 flex items-center justify-center text-2xl text-dorado-400 group-hover:scale-110 transition-transform">
+          ✨
+        </div>
+        <h3 class="text-xl font-bold text-white">Según tu Situación y Necesidad</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          ¿Ansiedad, problemas de pareja, toma de decisiones, cansancio o gratitud? Escribe lo que estás viviendo y recibe una reflexión pastoral personalizada fundamentada en la Palabra.
+        </p>
+      </div>
+
+      <!-- Card 3: Estudios Bíblicos -->
+      <div id="estudios" class="glass-card p-8 rounded-3xl space-y-4 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-2xl text-purple-400 group-hover:scale-110 transition-transform">
+          📚
+        </div>
+        <h3 class="text-xl font-bold text-white">Estudios por Libros y Personajes</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Planes estructurados por días. Explora libros completos como la <em>Epístola de Santiago</em> o vidas transformadas como la de <em>Simón Pedro</em>, marcando tu avance día a día.
+        </p>
+      </div>
+
+      <!-- Card 4: Santa Biblia -->
+      <div id="biblia" class="glass-card p-8 rounded-3xl space-y-4 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-2xl text-blue-400 group-hover:scale-110 transition-transform">
+          📜
+        </div>
+        <h3 class="text-xl font-bold text-white">Santa Biblia Multiversión</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Lee la Reina-Valera 1960, la NVI o la NTV. Resalta versículos en 5 colores distintos, crea apuntes personales para sermones dominicales y guárdalos en tus favoritos.
+        </p>
+      </div>
+
+      <!-- Card 5: Diario de Oración -->
+      <div class="glass-card p-8 rounded-3xl space-y-4 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-2xl text-emerald-400 group-hover:scale-110 transition-transform">
+          🙏
+        </div>
+        <h3 class="text-xl font-bold text-white">Diario de Oración y Testimonios</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Registra tus motivos de oración privados y familiares. Cuando Dios responda, márcalas como <em>Respondida por Dios</em> y escribe tu testimonio como recordatorio de su fidelidad.
+        </p>
+      </div>
+
+      <!-- Card 6: Recordatorio Diario y Mis Estudios -->
+      <div class="glass-card p-8 rounded-3xl space-y-4 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-rose-600/20 border border-rose-500/40 flex items-center justify-center text-2xl text-rose-400 group-hover:scale-110 transition-transform">
+          ⏰
+        </div>
+        <h3 class="text-xl font-bold text-white">Recordatorio Diario a tu Hora</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Configura una notificación cada mañana o noche (entre las 5:00 AM y las 10:30 PM). Además, gestiona los estudios que llevas y los que tú mismo crees para tu congregación.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GUÍA PASO A PASO PARA INSTALAR LA APK -->
+  <section id="instalar" class="py-20 bg-gradient-to-b from-[#141233] to-[#0d0b21] border-t border-indigo-950">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center space-y-3 mb-14">
+        <span class="text-xs uppercase tracking-widest text-dorado-400 font-bold">Instalación en 3 Simples Pasos</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">¿Cómo instalar la app en tu teléfono Android?</h2>
+        <p class="text-slate-300 text-sm max-w-xl mx-auto">
+          Mientras publicamos oficialmente en la Google Play Store, puedes instalar directamente la versión oficial en menos de 1 minuto sin complicaciones.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        
+        <!-- Paso 1 -->
+        <div class="p-6 rounded-2xl bg-[#1b1747]/70 border border-indigo-500/30 space-y-3 relative">
+          <div class="w-10 h-10 rounded-full bg-dorado-500 text-slate-950 font-extrabold flex items-center justify-center text-lg shadow-md">
+            1
+          </div>
+          <h4 class="text-base font-bold text-white">Descarga el Archivo APK</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Presiona el botón de descarga oficial en esta página (<a href="https://bit.ly/3TsopDl" class="text-dorado-400 underline font-semibold">bit.ly/3TsopDl</a>). La descarga comenzará al instante.
+          </p>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="p-6 rounded-2xl bg-[#1b1747]/70 border border-indigo-500/30 space-y-3 relative">
+          <div class="w-10 h-10 rounded-full bg-dorado-500 text-slate-950 font-extrabold flex items-center justify-center text-lg shadow-md">
+            2
+          </div>
+          <h4 class="text-base font-bold text-white">Confirma la Instalación</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Si Chrome o tu navegador te muestra el aviso de <em>"El archivo puede ser dañino"</em> (aviso estándar para toda APK fuera de la tienda), pulsa <strong>"Descargar de todos modos"</strong>.
+          </p>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="p-6 rounded-2xl bg-[#1b1747]/70 border border-indigo-500/30 space-y-3 relative">
+          <div class="w-10 h-10 rounded-full bg-dorado-500 text-slate-950 font-extrabold flex items-center justify-center text-lg shadow-md">
+            3
+          </div>
+          <h4 class="text-base font-bold text-white">Abre e Instala</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Toca el archivo descargado desde tu panel de notificaciones o descargas, pulsa <strong>"Instalar"</strong> y ¡listo! Ya tienes Maná disponible para tu devocional diario.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Banner de Descarga Inmediata -->
+      <div class="mt-12 text-center">
+        <a href="https://bit.ly/3TsopDl" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-dorado-500 via-amber-500 to-dorado-600 hover:from-dorado-400 hover:to-amber-500 text-slate-950 font-extrabold text-base shadow-2xl glow-gold hover:scale-105 transition-all">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          <span>Descargar Maná APK Ahora</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PREGUNTAS FRECUENTES (FAQ) -->
+  <section id="faq" class="py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center space-y-3 mb-14">
+      <span class="text-xs uppercase tracking-widest text-dorado-400 font-bold">Respuestas a tus dudas</span>
+      <h2 class="text-3xl font-extrabold text-white">Preguntas Frecuentes</h2>
+    </div>
+
+    <div class="space-y-4">
+      
+      <!-- FAQ 1 -->
+      <details class="group p-5 rounded-2xl glass-card border border-white/5 [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-white text-base">
+          <span>¿Tiene algún costo o suscripción la aplicación?</span>
+          <span class="text-dorado-400 group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+          No. Maná es 100% gratuita. Nuestro propósito es que cada creyente y persona interesada pueda tener acceso libre y sin barreras a la Palabra de Dios y al crecimiento espiritual diario.
+        </p>
+      </details>
+
+      <!-- FAQ 2 -->
+      <details class="group p-5 rounded-2xl glass-card border border-white/5 [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-white text-base">
+          <span>¿Tendré que volver a descargar la APK cuando haya actualizaciones?</span>
+          <span class="text-dorado-400 group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+          No. Maná cuenta con tecnología de actualización Over-The-Air (OTA). Cuando publiquemos mejoras, nuevos estudios o correcciones, la app se actualiza sola al abrirla sin que tengas que volver a descargar archivos manualmente.
+        </p>
+      </details>
+
+      <!-- FAQ 3 -->
+      <details class="group p-5 rounded-2xl glass-card border border-white/5 [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-white text-base">
+          <span>¿Es seguro instalar la APK en mi teléfono?</span>
+          <span class="text-dorado-400 group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+          Totalmente seguro. El archivo APK está libre de cualquier tipo de virus, malware o publicidad invasiva. El aviso que muestra Android al descargar es una advertencia preventiva que el sistema operativo coloca por defecto a cualquier aplicación instalada fuera de Google Play.
+        </p>
+      </details>
+
+      <!-- FAQ 4 -->
+      <details class="group p-5 rounded-2xl glass-card border border-white/5 [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between cursor-pointer font-bold text-white text-base">
+          <span>¿Estará pronto disponible en la Google Play Store y App Store?</span>
+          <span class="text-dorado-400 group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+          ¡Sí! Estamos en la etapa final de preparación y revisión para publicarla en las tiendas oficiales. Mientras tanto, este sitio web y el enlace oficial te permitirán disfrutar de todas las funciones sin esperar.
+        </p>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- LLAMADO A LA ACCIÓN FINAL -->
+  <section class="py-20 relative overflow-hidden bg-gradient-to-tr from-mana-950 via-mana-900 to-indigo-950 border-t border-indigo-900/40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        Comienza hoy tu tiempo <span class="gradient-text-gold">a solas con Dios</span>
+      </h2>
+      <p class="text-slate-300 text-base max-w-xl mx-auto leading-relaxed">
+        Descarga Maná gratis en tu teléfono y descubre la paz y dirección que solo su Palabra puede darte cada mañana.
+      </p>
+      <div class="pt-2">
+        <a href="https://bit.ly/3TsopDl" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-gradient-to-r from-dorado-500 to-amber-600 hover:from-dorado-400 hover:to-amber-500 text-slate-950 font-extrabold text-base shadow-2xl glow-gold hover:scale-105 transition-all">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          <span>Descargar Maná APK (v1.0.0)</span>
+        </a>
+      </div>
+      <p class="text-xs text-indigo-300/70">Enlace oficial de descarga: https://bit.ly/3TsopDl</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-12 bg-[#080714] border-t border-indigo-950 text-slate-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-indigo-600/30 flex items-center justify-center p-1">
+          <img src="icon.png" alt="Maná" class="w-full h-full object-cover rounded-lg" onerror="this.src='favicon.png';">
+        </div>
+        <div>
+          <span class="font-bold text-white text-sm">Maná</span>
+          <span class="block text-[11px] text-slate-500">© 2026 Todos los derechos reservados.</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6 text-slate-400">
+        <a href="#funciones" class="hover:text-white transition-colors">Funciones</a>
+        <a href="#instalar" class="hover:text-white transition-colors">Cómo Instalar</a>
+        <a href="#faq" class="hover:text-white transition-colors">Preguntas</a>
+        <a href="https://bit.ly/3TsopDl" class="text-dorado-400 hover:underline font-semibold">Descargar APK</a>
+      </div>
+
+    </div>
+  </footer>
+
+</body>
+</html>
