@@ -1,10 +1,30 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const VERSION_ACTUAL = '1.2.0';
+export const VERSION_ACTUAL = '1.3.0';
 
-export const CLAVE_STORAGE_NOVEDADES = 'version_novedades_vista_v1_2_0_completa';
+export const CLAVE_STORAGE_NOVEDADES = 'version_novedades_vista_v1_3_0';
 
 export const NOVEDADES_SLIDES = [
+  {
+    id: 'audio_narracion_voz',
+    icono: 'volume-high',
+    colorIcono: '#8B5CF6',
+    etiqueta: '¡Nuevo! Audio con Voz',
+    titulo: 'Escucha Devocionales y la Biblia en Audio',
+    descripcion:
+      'Ahora puedes escuchar en voz alta cualquier devocional del día, estudio bíblico o capítulo de la Biblia. Incluye control de velocidad (0.8x, 1.0x, 1.2x) y funciona sin conexión a internet.',
+    destacado: 'Diseñado para edificar tu fe mientras manejas, caminas o descansas.',
+  },
+  {
+    id: 'cuaderno_predicas',
+    icono: 'mic',
+    colorIcono: '#F59E0B',
+    etiqueta: '¡Nuevo! En el Culto',
+    titulo: 'Cuaderno de Prédicas Dominicales',
+    descripcion:
+      'Toma apuntes estructurados del sermón de tu pastor. Al escribir cualquier cita como "Romanos 8:28", la app la reconoce y te permite insertar el versículo completo con un solo toque.',
+    destacado: 'Plantilla de sermón homilético lista para rellenar y compartir por WhatsApp.',
+  },
   {
     id: 'biblia_offline_24_7',
     icono: 'book',
@@ -12,48 +32,28 @@ export const NOVEDADES_SLIDES = [
     etiqueta: 'Biblia 24/7 Sin Internet',
     titulo: 'Biblia RV1960 Completa 100% Offline',
     descripcion:
-      'Ahora puedes leer los 66 libros completos de la Biblia (Génesis a Apocalipsis) y sus 1,189 capítulos sin necesidad de conexión a internet ni consumo de datos móviles.',
-    destacado: 'Lectura inmediata 0ms, disponible las 24 horas del día en cualquier lugar.',
+      'Lee los 66 libros completos de la Biblia (Génesis a Apocalipsis) y sus 1,189 capítulos en cualquier momento y lugar, sin consumir datos móviles ni requerir WiFi.',
+    destacado: 'Lectura inmediata 0ms, resaltado en 5 colores y versículos favoritos.',
   },
   {
     id: 'estudios_profundos',
     icono: 'school-outline',
     colorIcono: '#6366F1',
-    etiqueta: 'Estudios Exegéticos Profundos',
+    etiqueta: 'Estudios Exegéticos',
     titulo: 'Análisis Bíblico Profundo y Contextual',
     descripcion:
-      'Estudios enriquecidos con contexto de autor, trasfondo histórico y cultural, exégesis en griego/hebreo original (makarios, hypomoné, Shalom), referencias cruzadas y oraciones guiadas.',
+      'Planes de estudio enriquecidos con contexto de autor, trasfondo histórico y cultural, exégesis en griego/hebreo original (makarios, hypomoné, Shalom), referencias cruzadas y oraciones.',
     destacado: 'Planes completos en Mateo, Santiago, 1 y 2 Pedro, Filipenses y Paz Sobrenatural.',
   },
   {
     id: 'perfil_estudios_organizados',
     icono: 'albums-outline',
-    colorIcono: '#F59E0B',
+    colorIcono: '#EC4899',
     etiqueta: 'Organización en Perfil',
     titulo: 'Mis Estudios Creados y Suscritos',
     descripcion:
-      'Nuevo panel dividido en 2 pestañas organizadas para dar seguimiento a tu avance diario, reanudar planes bíblicos con un toque y compartir lecciones con hermanos en la fe.',
+      'Panel dividido en 2 pestañas para dar seguimiento a tu avance día a día, reanudar planes con un toque y compartir lecciones con hermanos en la fe.',
     destacado: 'Historial de lecciones, barra visual de progreso y gestión de autor.',
-  },
-  {
-    id: 'devocionales_extensos',
-    icono: 'heart-outline',
-    colorIcono: '#EC4899',
-    etiqueta: 'Comunión Diaria',
-    titulo: 'Devocionales Pastorales Extensos',
-    descripcion:
-      'Reflexiones diarias enriquecidas de 14 a 22 párrafos, con profunda aplicación práctica a tu vida familiar, laboral y espiritual, complementadas con oraciones guiadas para cada día.',
-    destacado: 'Diseñados para nutrir tu alma sin prisa, con tipografía cómoda y párrafos bien espaciados.',
-  },
-  {
-    id: 'actualizaciones_ota',
-    icono: 'flash-outline',
-    colorIcono: '#8B5CF6',
-    etiqueta: 'Actualizaciones Instantáneas',
-    titulo: 'Actualizaciones al Instante sin Reinstalar',
-    descripcion:
-      'La app se actualiza automáticamente por el aire (OTA) a través de EAS Update sin que tengas que descargar ni instalar nuevos archivos APK manualmente.',
-    destacado: 'Tu aplicación siempre moderna, rápida y al día con las últimas mejoras.',
   },
 ];
 
