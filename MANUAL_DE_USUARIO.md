@@ -56,7 +56,7 @@ Bienvenido al manual de usuario de **Maná**, una aplicación concebida para for
 
 ### 📥 Descarga de la Aplicación
 Puedes obtener la versión más reciente de la aplicación mediante el enlace oficial:
-👉 **[https://bit.ly/3TsopDl](https://bit.ly/3TsopDl)**
+👉 **[https://bit.ly/4shz6oU](https://bit.ly/4shz6oU)**
 
 ### ⚡ Actualizaciones Automáticas e Instantáneas (OTA)
 Maná cuenta con un motor de actualización instantánea (Over-The-Air):
@@ -143,7 +143,7 @@ Cada devocional en Maná contiene:
 Al pulsar **Compartir Devocional** (icono superior o inferior), se generará un mensaje formateado con el título, versículo, fragmento central de la reflexión, la oración y el pie de descarga oficial:
 ```
 📲 Descarga la app Maná gratis aquí:
-https://bit.ly/3TsopDl
+https://bit.ly/4shz6oU
 ```
 Podrás enviarlo fácilmente por WhatsApp, Telegram, correo electrónico o redes sociales a familiares y amigos.
 
@@ -230,7 +230,7 @@ Presiona **Compartir** dentro del menú del versículo para generar una tarjeta 
 — Salmos 119:105 (RV1960)
 
 📲 Descarga la app Maná gratis aquí:
-https://bit.ly/3TsopDl
+https://bit.ly/4shz6oU
 ```
 
 ---
@@ -268,7 +268,7 @@ Al ingresar a **Mis Estudios**, encontrarás dos secciones claramente diferencia
 - Reúne todos los estudios que estás cursando actualmente y aquellos que ya completaste en el pasado.
 - **Subfiltros**: Filtra por *Todos*, *En curso* o *Completados*.
 - **Barra de Progreso**: Muestra los días leídos y el porcentaje de avance.
-- **Recomendar / Compartir (📲)**: Comparte el estudio con amigos y hermanos en la fe incluyendo el enlace inteligente de Maná (`https://bit.ly/3TsopDl`).
+- **Recomendar / Compartir (📲)**: Comparte el estudio con amigos y hermanos en la fe incluyendo el enlace inteligente de Maná (`https://bit.ly/4shz6oU`).
 - **Desuscribirse**: Opción para cancelar la suscripción si deseas liberar espacio en tu lista activa.
 
 #### 2. Pestaña: Creados por mí
@@ -313,7 +313,7 @@ Si tienes alguna duda durante el uso de la aplicación, dirígete a **Perfil →
    Si recuerdas tu clave actual, ve a *Perfil → Cambiar contraseña*. Si la olvidaste, presiona *"¿Olvidaste tu contraseña?"* en la pantalla de inicio de sesión y sigue las instrucciones que llegarán a tu correo electrónico.
 
 4. **¿Cómo comparto devocionales o versículos con personas que no tienen la app?**  
-   Al tocar el botón *Compartir*, la aplicación incluye automáticamente el enlace seguro `https://bit.ly/3TsopDl` para que la otra persona pueda descargar Maná gratis en su teléfono con un solo clic.
+   Al tocar el botón *Compartir*, la aplicación incluye automáticamente el enlace seguro `https://bit.ly/4shz6oU` para que la otra persona pueda descargar Maná gratis en su teléfono con un solo clic.
 
 ### ✉️ Envío de Tickets de Soporte
 Si encuentras un error o requieres asistencia pastoral o técnica:
