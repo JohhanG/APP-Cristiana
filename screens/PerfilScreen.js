@@ -286,6 +286,247 @@ export default function PerfilScreen({ navigation }) {
       >
 
       <View style={styles.encabezadoPerfil}>
+        <TouchableOpacity style={styles.avatar} onPress={cambiarFotoPerfil} disabled={subiendoFoto}>
+          {subiendoFoto ? (
+            <ActivityIndicator color={colores.primario} />
+          ) : fotoUrl ? (
+            <Image source={{ uri: fotoUrl }} style={styles.avatarImagen} />
+          ) : (
+            <Text style={styles.avatarTexto}>
+              {(nombreUsuario || usuario?.email || '?').charAt(0).toUpperCase()}
+            </Text>
+          )}
+          <View style={styles.iconoCamara}>
+            <Ionicons name="camera" size={14} color={colores.primarioTexto} />
+          </View>
+        </TouchableOpacity>
+
+        {editandoNombre ? (
+          <View style={styles.filaEdicionNombre}>
+            <TextInput
+              style={styles.inputNombre}
+              value={nombreEditado}
+              onChangeText={setNombreEditado}
+              autoFocus
+              maxLength={30}
+            />
+            <TouchableOpacity onPress={guardarNombre} disabled={guardandoNombre} style={{ marginLeft: 8 }}>
+              {guardandoNombre ? (
+                <ActivityIndicator size="small" color={colores.primario} />
+              ) : (
+                <Ionicons name="checkmark-circle" size={26} color={colores.primario} />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setNombreEditado(nombreUsuario);
+                setEditandoNombre(false);
+              }}
+              style={{ marginLeft: 6 }}
+            >
+              <Ionicons name="close-circle" size={26} color={colores.textoTenue} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.filaEdicionNombre} onPress={() => setEditandoNombre(true)}>
+            <Text style={styles.nombreUsuario}>{nombreUsuario || 'Sin nombre'}</Text>
+            <Ionicons name="pencil" size={15} color={colores.textoTenue} style={{ marginLeft: 8 }} />
+          </TouchableOpacity>
+        )}
+
+        <Text style={styles.correo}>{usuario?.email}</Text>
+      </View>
+
+      <View style={styles.seccion}>
+        <View style={styles.filaAjuste}>
+          <View style={styles.filaIconoTexto}>
+            <Ionicons
+              name={modoOscuro ? 'moon' : 'sunny'}
+              size={20}
+              color={colores.primario}
+              style={{ marginRight: 10 }}
+            />
+            <Text style={styles.textoAjuste}>Modo oscuro</Text>
+          </View>
+          <Switch
+            value={modoOscuro}
+            onValueChange={alternarTema}
+            trackColor={{ false: '#ccc', true: colores.primario }}
+            thumbColor="#fff"
+          />
+        </View>
+      </View>
+
+      <View style={styles.seccion}>
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => recordatorioActivo && setModalHoraVisible(true)}
+          activeOpacity={recordatorioActivo ? 0.6 : 1}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="notifications-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <View>
+              <Text style={styles.textoAjuste}>Recordatorio diario</Text>
+              {recordatorioActivo && horaRecordatorio && (
+                <Text style={styles.subtextoAjuste}>
+                  Todos los días a las {formatearHora(horaRecordatorio.hora, horaRecordatorio.minuto)} · toca para cambiar
+                </Text>
+              )}
+            </View>
+          </View>
+          <Switch
+            value={recordatorioActivo}
+            onValueChange={alternarRecordatorio}
+            trackColor={{ false: '#ccc', true: colores.primario }}
+            thumbColor="#fff"
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.seccion}>
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => setMostrarCambioPassword(!mostrarCambioPassword)}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="lock-closed-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Cambiar contraseña</Text>
+          </View>
+          <Ionicons
+            name={mostrarCambioPassword ? 'chevron-up' : 'chevron-down'}
+            size={18}
+            color={colores.textoSecundario}
+          />
+        </TouchableOpacity>
+
+        {mostrarCambioPassword && (
+          <View style={styles.formularioPassword}>
+            <TextInput
+              style={styles.input}
+              placeholder="Nueva contraseña"
+              placeholderTextColor={colores.textoTenue}
+              secureTextEntry
+              value={nuevaPassword}
+              onChangeText={setNuevaPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirmar nueva contraseña"
+              placeholderTextColor={colores.textoTenue}
+              secureTextEntry
+              value={confirmarPassword}
+              onChangeText={setConfirmarPassword}
+            />
+            <TouchableOpacity
+              style={styles.botonGuardarPassword}
+              onPress={cambiarPassword}
+              disabled={guardandoPassword}
+            >
+              {guardandoPassword ? (
+                <ActivityIndicator color={colores.primarioTexto} />
+              ) : (
+                <Text style={styles.textoBotonGuardarPassword}>Guardar contraseña</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.seccion}>
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('LineaDeTiempo')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="footsteps-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Tu camino con Dios</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('DiarioOracion')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="hand-left-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Diario de oración</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('MisEstudios')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="book-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <View>
+              <Text style={styles.textoAjuste}>Mis estudios</Text>
+              <Text style={styles.subtextoAjuste}>Suscritos e historial · Creados por ti</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('Favoritos')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="heart-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Mis favoritos</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('VersiculosFavoritos')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="bookmark-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Mis versículos</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('Notas')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="create-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Mis apuntes</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.seccion}>
+        <TouchableOpacity
+          style={styles.filaAjuste}
+          onPress={() => navigation.navigate('Ayuda')}
+        >
+          <View style={styles.filaIconoTexto}>
+            <Ionicons name="help-circle-outline" size={20} color={colores.primario} style={{ marginRight: 10 }} />
+            <Text style={styles.textoAjuste}>Ayuda y soporte</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colores.textoSecundario} />
+        </TouchableOpacity>
+
+        <View style={{ height: 0.5, backgroundColor: colores.borde }} />
+
         <TouchableOpacity
           style={styles.filaAjuste}
           onPress={() => setModalNovedadesVisible(true)}
