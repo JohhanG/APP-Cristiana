@@ -23,6 +23,7 @@ import {
 } from '../lib/versiculosInteracciones';
 import { useTheme } from '../theme/ThemeContext';
 import { PIE_DESCARGA } from '../constants/enlacesApp';
+import BarraReproductorAudio from '../components/BarraReproductorAudio';
  
 const CLAVE_ULTIMA_LECTURA = 'bibliaUltimaLectura';
  
@@ -228,6 +229,14 @@ export default function BibliaScreen({ navigation }) {
             {version === 'RV1960' ? `${versionActual?.nombre} • 66 Libros 100% Sin Internet` : versionActual?.nombre}
           </Text>
           <Text style={styles.pistaToque}>Toca un versículo para marcarlo o resaltarlo</Text>
+
+          {/* Reproductor de Audio para el Capítulo Bíblico */}
+          {versiculos && versiculos.length > 0 && (
+            <BarraReproductorAudio
+              titulo={`${libroActual?.nombre} ${capitulo}`}
+              textoANarrar={`${libroActual?.nombre}, capítulo ${capitulo}. ${versiculos.map((v) => `${v.numero}. ${v.texto}`).join(' ')}`}
+            />
+          )}
  
           {versiculos.map((v) => {
             const interaccion = interacciones[v.numero];

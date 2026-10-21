@@ -25,6 +25,7 @@ import {
   DURACIONES_ESTUDIO,
 } from '../lib/estudiosService.js';
 import { PIE_DESCARGA } from '../constants/enlacesApp.js';
+import BarraReproductorAudio from '../components/BarraReproductorAudio';
 
 export default function EstudioDetalleScreen({ route, navigation }) {
   const { colores } = useTheme();
@@ -395,6 +396,12 @@ export default function EstudioDetalleScreen({ route, navigation }) {
             )}
 
             <Text style={styles.tituloDia}>{dia.titulo}</Text>
+
+            {/* Reproductor de Audio para el Día de Estudio */}
+            <BarraReproductorAudio
+              titulo={dia.titulo}
+              textoANarrar={`${dia.titulo}. Pasaje bíblico: ${dia.referencia_biblica}. ${dia.texto_biblico || ''}. ${dia.autor_contexto ? 'Contexto de autor: ' + dia.autor_contexto : ''}. Reflexión del día: ${dia.reflexion || ''}. ${dia.oracion ? 'Oración: ' + dia.oracion : ''}`}
+            />
 
             {/* Pasaje bíblico */}
             <View style={styles.cajaPasaje}>

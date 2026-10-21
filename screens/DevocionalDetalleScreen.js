@@ -19,6 +19,7 @@ import {
   TEMAS_DEVOCIONALES,
 } from '../lib/devocionalesService.js';
 import { PIE_DESCARGA } from '../constants/enlacesApp.js';
+import BarraReproductorAudio from '../components/BarraReproductorAudio';
 
 export default function DevocionalDetalleScreen({ route, navigation }) {
   const { colores } = useTheme();
@@ -140,6 +141,12 @@ export default function DevocionalDetalleScreen({ route, navigation }) {
 
       {/* Título de la Prédica */}
       <Text style={styles.titulo}>{devocional.titulo}</Text>
+
+      {/* Reproductor de Audio con Voz */}
+      <BarraReproductorAudio
+        titulo={devocional.titulo}
+        textoANarrar={`${devocional.titulo}. Pasaje bíblico: ${devocional.referencia_biblica}. ${textoBiblico ? textoBiblico : ''}. Reflexión: ${textoPredicacion}. ${devocional.paso_practico ? 'Paso de fe: ' + devocional.paso_practico : ''}. ${devocional.oracion ? 'Oración: ' + devocional.oracion : ''}`}
+      />
 
       {/* 1. Tarjeta del Pasaje Bíblico Central */}
       <View style={styles.tarjetaBiblica}>
