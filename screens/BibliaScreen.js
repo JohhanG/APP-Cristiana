@@ -26,39 +26,75 @@ import { PIE_DESCARGA } from '../constants/enlacesApp';
 import BarraReproductorAudio from '../components/BarraReproductorAudio';
  
 const CLAVE_ULTIMA_LECTURA = 'bibliaUltimaLectura';
- 
-export default function BibliaScreen({ navigation }) {
+const CLAVE_INICIO_GENESIS = 'bibliaInicioGenesisV130';
+
+export default function BibliaScreen({ navigation, route }) {
   const { colores } = useTheme();
   const styles = crearEstilos(colores);
- 
+
   const [version, setVersion] = useState('RV1960');
-  const [libroNumero, setLibroNumero] = useState(1); // Génesis, por defecto
+  const [libroNumero, setLibroNumero] = useState(1); // Génesis 1 por defecto al descargar
   const [capitulo, setCapitulo] = useState(1);
   const [versiculos, setVersiculos] = useState([]);
   const [interacciones, setInteracciones] = useState({}); // { [numeroVerso]: { favorito, color_resaltado } }
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
- 
+
   const [modalVersionVisible, setModalVersionVisible] = useState(false);
   const [modalLibroVisible, setModalLibroVisible] = useState(false);
   const [modalCapituloVisible, setModalCapituloVisible] = useState(false);
   const [versiculoSeleccionado, setVersiculoSeleccionado] = useState(null); // { numero, texto }
   const [guardandoInteraccion, setGuardandoInteraccion] = useState(false);
- 
+
   const libroActual = LIBROS_BIBLIA.find((l) => l.numero === libroNumero);
   const versionActual = VERSIONES.find((v) => v.codigo === version);
- 
-  // Cargar la última lectura guardada al abrir la pantalla por primera vez
+
+  // Asegurar que al descargar la app o iniciar la lectura siempre inicie en Génesis 1
   useEffect(() => {
-    AsyncStorage.getItem(CLAVE_ULTIMA_LECTURA).then((guardado) => {
-      if (guardado) {
-        const datos = JSON.parse(guardado);
-        setVersion(datos.version || 'RV1960');
-        setLibroNumero(datos.libroNumero || 1);
-        setCapitulo(datos.capitulo || 1);
+    async function inicializar() {
+      // 1. Si se navega explícitamente con parámetros (ej. desde Novedades, Inicio o Estudio)
+      if (route?.params?.libroNumero) {
+        setLibroNumero(Number(route.params.libroNumero));
+        setCapitulo(Number(route.params.capitulo) || 1);
+        if (route.params.version) setVersion(route.params.version);
+        return;
       }
-    });
-  }, []);
+
+      // 2. Si es la primera vez que se abre la app en esta versión, forzar Génesis 1
+      const yaConfigurado = await AsyncStorage.getItem(CLAVE_INICIO_GENESIS);
+      if (!yaConfigurado) {
+        setVersion('RV1960');
+        setLibroNumero(1);
+        setCapitulo(1);
+        await AsyncStorage.setItem(CLAVE_INICIO_GENESIS, 'true');
+        await AsyncStorage.setItem(
+          CLAVE_ULTIMA_LECTURA,
+          JSON.stringify({ version: 'RV1960', libroNumero: 1, capitulo: 1 })
+        );
+        return;
+      }
+
+      // 3. Si el usuario ya ha leído antes, recuperar su última lectura
+      const guardado = await AsyncStorage.getItem(CLAVE_ULTIMA_LECTURA);
+      if (guardado) {
+        try {
+          const datos = JSON.parse(guardado);
+          setVersion(datos.version || 'RV1960');
+          setLibroNumero(datos.libroNumero || 1);
+          setCapitulo(datos.capitulo || 1);
+        } catch {
+          setLibroNumero(1);
+          setCapitulo(1);
+        }
+      } else {
+        setVersion('RV1960');
+        setLibroNumero(1);
+        setCapitulo(1);
+      }
+    }
+
+    inicializar();
+  }, [route?.params]);
  
   useEffect(() => {
     cargarCapitulo();

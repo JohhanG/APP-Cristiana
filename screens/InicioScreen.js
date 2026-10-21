@@ -222,9 +222,11 @@ export default function InicioScreen({ navigation }) {
           const datos = JSON.parse(guardado);
           const libro = LIBROS_BIBLIA.find((l) => l.numero === datos.libroNumero);
           if (libro) {
-            setLecturaBiblia({ nombreLibro: libro.nombre, capitulo: datos.capitulo });
+            setLecturaBiblia({ libroNumero: libro.numero, nombreLibro: libro.nombre, capitulo: datos.capitulo });
           }
         } catch {}
+      } else {
+        setLecturaBiblia({ libroNumero: 1, nombreLibro: 'Génesis', capitulo: 1 });
       }
     } catch (error) {
       console.log('Carga en segundo plano completada con fallback seguro:', error?.message);
@@ -458,7 +460,15 @@ export default function InicioScreen({ navigation }) {
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity style={styles.tarjetaRapida} onPress={() => navigation.navigate('Biblia')}>
+        <TouchableOpacity
+          style={styles.tarjetaRapida}
+          onPress={() =>
+            navigation.navigate('Biblia', {
+              libroNumero: lecturaBiblia?.libroNumero || 1,
+              capitulo: lecturaBiblia?.capitulo || 1,
+            })
+          }
+        >
           <View style={[styles.iconoTarjetaRapida, { backgroundColor: colores.primario + '22' }]}>
             <Ionicons name="reader-outline" size={22} color={colores.primario} />
           </View>
@@ -545,7 +555,7 @@ export default function InicioScreen({ navigation }) {
           } else if (featureId === 'estudios') {
             navigation.navigate('Estudios');
           } else if (featureId === 'biblia_genesis') {
-            navigation.navigate('Biblia');
+            navigation.navigate('Biblia', { libroNumero: 1, capitulo: 1 });
           }
         }}
       />

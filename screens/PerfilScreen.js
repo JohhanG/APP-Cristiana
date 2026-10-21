@@ -662,7 +662,7 @@ export default function PerfilScreen({ navigation }) {
           } else if (featureId === 'estudios') {
             navigation.navigate('Estudios');
           } else if (featureId === 'biblia_genesis') {
-            navigation.navigate('Biblia');
+            navigation.navigate('Biblia', { libroNumero: 1, capitulo: 1 });
           }
         }}
       />
