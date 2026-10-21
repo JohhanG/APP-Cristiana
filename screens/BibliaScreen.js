@@ -224,7 +224,9 @@ export default function BibliaScreen({ navigation }) {
           <Text style={styles.tituloCapitulo}>
             {libroActual?.nombre} {capitulo}
           </Text>
-          <Text style={styles.subtituloVersion}>{versionActual?.nombre}</Text>
+          <Text style={styles.subtituloVersion}>
+            {version === 'RV1960' ? `${versionActual?.nombre} • 66 Libros 100% Sin Internet` : versionActual?.nombre}
+          </Text>
           <Text style={styles.pistaToque}>Toca un versículo para marcarlo o resaltarlo</Text>
  
           {versiculos.map((v) => {
@@ -450,6 +452,23 @@ function crearEstilos(colores) {
     },
     selector: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 },
     textoSelector: { fontSize: 18, fontWeight: '600', color: colores.texto },
+    badgeOffline: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#10B98118',
+      paddingHorizontal: 8,
+      paddingVertical: 5,
+      borderRadius: 12,
+      marginRight: 6,
+      borderWidth: 1,
+      borderColor: '#10B98140',
+    },
+    textoBadgeOffline: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: '#10B981',
+      marginLeft: 3,
+    },
     selectorVersion: {
       flexDirection: 'row',
       alignItems: 'center',

@@ -323,7 +323,7 @@ export default function InicioScreen({ navigation }) {
                 </View>
               </View>
               <Text style={styles.bannerNovedadesSubtitulo}>
-                Toca aquí para descubrir las nuevas mejoras y funciones.
+                Biblia 24/7 offline, estudios exegéticos y nuevo perfil. Toca para ver.
               </Text>
             </View>
             <TouchableOpacity

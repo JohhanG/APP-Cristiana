@@ -2,48 +2,58 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const VERSION_ACTUAL = '1.2.0';
 
-export const CLAVE_STORAGE_NOVEDADES = 'version_novedades_vista';
+export const CLAVE_STORAGE_NOVEDADES = 'version_novedades_vista_v1_2_0_completa';
 
 export const NOVEDADES_SLIDES = [
   {
-    id: 'situacion',
-    icono: 'heart-outline',
-    colorIcono: '#6366F1',
-    etiqueta: 'Nueva experiencia',
-    titulo: 'Devocionales según tu situación',
-    descripcion:
-      'Encuentra reflexiones pastorales cálidas y cercanas según lo que estés viviendo hoy: momentos de ansiedad, familia, trabajo, paz o fe.',
-    destacado: 'Inspiración bíblica oportuna y reconfortante para tu caminar.',
-  },
-  {
-    id: 'estudios',
-    icono: 'book-outline',
+    id: 'biblia_offline_24_7',
+    icono: 'book',
     colorIcono: '#10B981',
-    etiqueta: 'Crecimiento bíblico',
-    titulo: 'Planes de estudio de 7, 15 y 30 días',
+    etiqueta: 'Biblia 24/7 Sin Internet',
+    titulo: 'Biblia RV1960 Completa 100% Offline',
     descripcion:
-      'Sumérgete en planes con estructura homilética diaria: lectura bíblica, reflexión profunda, paso práctico de fe y preguntas para meditar.',
-    destacado: 'Suscripción fluida y lectura disponible en modo sin conexión.',
+      'Ahora puedes leer los 66 libros completos de la Biblia (Génesis a Apocalipsis) y sus 1,189 capítulos sin necesidad de conexión a internet ni consumo de datos móviles.',
+    destacado: 'Lectura inmediata 0ms, disponible las 24 horas del día en cualquier lugar.',
   },
   {
-    id: 'biblia_genesis',
-    icono: 'reader-outline',
+    id: 'estudios_profundos',
+    icono: 'school-outline',
+    colorIcono: '#6366F1',
+    etiqueta: 'Estudios Exegéticos Profundos',
+    titulo: 'Análisis Bíblico Profundo y Contextual',
+    descripcion:
+      'Estudios enriquecidos con contexto de autor, trasfondo histórico y cultural, exégesis en griego/hebreo original (makarios, hypomoné, Shalom), referencias cruzadas y oraciones guiadas.',
+    destacado: 'Planes completos en Mateo, Santiago, 1 y 2 Pedro, Filipenses y Paz Sobrenatural.',
+  },
+  {
+    id: 'perfil_estudios_organizados',
+    icono: 'albums-outline',
     colorIcono: '#F59E0B',
-    etiqueta: 'Lectura bíblica',
-    titulo: 'Comienza desde el Principio',
+    etiqueta: 'Organización en Perfil',
+    titulo: 'Mis Estudios Creados y Suscritos',
     descripcion:
-      'Tu lectura bíblica ahora comienza organizadamente desde Génesis 1, guardando siempre tu progreso exacto para que continúes sin perderte.',
-    destacado: 'Resalta con colores y guarda versículos favoritos.',
+      'Nuevo panel dividido en 2 pestañas organizadas para dar seguimiento a tu avance diario, reanudar planes bíblicos con un toque y compartir lecciones con hermanos en la fe.',
+    destacado: 'Historial de lecciones, barra visual de progreso y gestión de autor.',
   },
   {
-    id: 'rendimiento',
+    id: 'devocionales_extensos',
+    icono: 'heart-outline',
+    colorIcono: '#EC4899',
+    etiqueta: 'Comunión Diaria',
+    titulo: 'Devocionales Pastorales Extensos',
+    descripcion:
+      'Reflexiones diarias enriquecidas de 14 a 22 párrafos, con profunda aplicación práctica a tu vida familiar, laboral y espiritual, complementadas con oraciones guiadas para cada día.',
+    destacado: 'Diseñados para nutrir tu alma sin prisa, con tipografía cómoda y párrafos bien espaciados.',
+  },
+  {
+    id: 'actualizaciones_ota',
     icono: 'flash-outline',
     colorIcono: '#8B5CF6',
-    etiqueta: 'Rendimiento y fluidez',
-    titulo: 'Mayor velocidad y estabilidad',
+    etiqueta: 'Actualizaciones Instantáneas',
+    titulo: 'Actualizaciones al Instante sin Reinstalar',
     descripcion:
-      'Optimizamos la carga para que sea inmediata y sin interrupciones. Disfruta de una experiencia ágil, fluida y sin demoras en cada pantalla.',
-    destacado: 'Respuestas al instante para que te enfoques en tu comunión.',
+      'La app se actualiza automáticamente por el aire (OTA) a través de EAS Update sin que tengas que descargar ni instalar nuevos archivos APK manualmente.',
+    destacado: 'Tu aplicación siempre moderna, rápida y al día con las últimas mejoras.',
   },
 ];
 
@@ -68,4 +78,13 @@ export async function marcarNovedadesComoVistas() {
   } catch (error) {
     console.warn('Error guardando versión de novedades vista:', error);
   }
+}
+
+/**
+ * Reinicia el estado para forzar mostrar el panel de novedades nuevamente.
+ */
+export async function reiniciarEstadoNovedades() {
+  try {
+    await AsyncStorage.removeItem(CLAVE_STORAGE_NOVEDADES);
+  } catch {}
 }
