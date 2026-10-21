@@ -159,6 +159,22 @@ function crearEstilos(colores) {
       paddingBottom: 8,
     },
     titulo: { fontSize: 22, fontWeight: '600', color: colores.texto },
+    botonCrearPredica: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+      backgroundColor: '#F59E0B18',
+      borderWidth: 1,
+      borderColor: '#F59E0B50',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+    },
+    textoBotonCrearPredica: {
+      color: '#F59E0B',
+      fontWeight: '700',
+      fontSize: 13,
+    },
     botonCrear: {
       backgroundColor: colores.primario,
       paddingHorizontal: 14,
